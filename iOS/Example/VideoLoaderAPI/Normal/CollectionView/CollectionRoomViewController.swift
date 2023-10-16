@@ -30,7 +30,11 @@ class RoomCollectionViewController: UIViewController {
         handler.audioSlicingType = audioType
         handler.onRequireRenderVideo = { [weak self] (info, cell, indexPath) in
             guard let cell = cell as? TestRoomCollectionViewCell else {return nil }
-            return cell.canvasView
+            let roomInfo = self?.roomList?[indexPath.row]
+            if info.channelName != roomInfo?.channelName() {
+                return cell.otherBroadcasterView
+            }
+            return cell.mainBroadcasterView
         }
         return handler
     }()
@@ -133,6 +137,7 @@ extension RoomCollectionViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kUIListViewCellIdentifier, for: indexPath) as! TestRoomCollectionViewCell
         let room = self.roomList![indexPath.row]
         cell.titleLabel.text = "roomId:\(room.channelName())\n index:\(indexPath.row)"
+        cell.broadcasterCount = room.anchorInfoList.count
         return cell
     }
     
