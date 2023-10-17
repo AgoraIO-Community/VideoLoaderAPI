@@ -16,6 +16,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import io.agora.videoloaderapi.AGSlicingType
+import io.agora.videoloaderapi.AgoraApplication
 import io.agora.videoloaderapi.OnPageScrollEventHandler
 import io.agora.videoloaderapi.VideoLoader
 import io.agora.videoloaderapi.databinding.ShowLiveDetailActivityBinding
@@ -143,8 +144,9 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
 
         val selectedRoomIndex = intent.getIntExtra(EXTRA_ROOM_DETAIL_INFO_LIST_SELECTED_INDEX, 0)
 
-        onPageScrollEventHandler = object : OnPageScrollEventHandler(this, RtcEngineInstance.rtcEngine, RtcEngineInstance.localUid(), true,
-            AGSlicingType.VISIABLE
+        val needPreJoin = AgoraApplication.the()?.needPreJoin == true
+        onPageScrollEventHandler = object : OnPageScrollEventHandler(this, RtcEngineInstance.rtcEngine, RtcEngineInstance.localUid(), needPreJoin,
+            AgoraApplication.the()?.sliceMode!!
         ) {
             override fun onPageScrollStateChanged(state: Int) {
                 when(state){
