@@ -1,4 +1,4 @@
-package io.agora.scene.show.videoLoaderAPI
+package io.agora.videoloaderapi
 
 import android.content.Context
 import android.os.Handler
@@ -7,7 +7,6 @@ import android.util.Log
 import android.util.SparseArray
 import androidx.viewpager2.widget.ViewPager2
 import io.agora.rtc2.*
-import io.agora.scene.base.manager.UserManager
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -89,7 +88,7 @@ abstract class OnPageScrollEventHandler constructor(
             onRequireRenderVideo(position, newInfo)?.let { canvas ->
                 videoSwitcher.renderVideo(
                     newInfo,
-                    UserManager.getInstance().user.id.toInt(),
+                    localUid,
                     canvas
                 )
             }
@@ -221,7 +220,7 @@ abstract class OnPageScrollEventHandler constructor(
                 onRequireRenderVideo(position, anchorInfo)?.let {
                     videoSwitcher.renderVideo(
                         anchorInfo,
-                        UserManager.getInstance().user.id.toInt(),
+                        localUid,
                         it
                     )
                 }
@@ -315,7 +314,7 @@ abstract class OnPageScrollEventHandler constructor(
                 onRequireRenderVideo(position, anchorInfo)?.let {
                     videoSwitcher.renderVideo(
                         anchorInfo,
-                        UserManager.getInstance().user.id.toInt(),
+                        localUid,
                         it
                     )
                 }
