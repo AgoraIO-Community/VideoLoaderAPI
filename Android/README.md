@@ -1,4 +1,4 @@
-# VideoLoaderAPI
+# VideoLoaderAPI
 
 VideoLoaderAPI 即秒开秒切场景化api, 该模块旨在帮助视频直播开发者更快集成声网秒切、秒开相关能力的最佳实践.
 
