@@ -44,14 +44,8 @@ class MainActivity : AppCompatActivity() {
             AGSlicingType.VISIABLE -> {
                 mViewBinding.spSliceMode.setSelection(0)
             }
-            AGSlicingType.END_DRAG -> {
-                mViewBinding.spSliceMode.setSelection(1)
-            }
             AGSlicingType.END_SCROLL -> {
-                mViewBinding.spSliceMode.setSelection(2)
-            }
-            AGSlicingType.NEVER -> {
-                mViewBinding.spSliceMode.setSelection(3)
+                mViewBinding.spSliceMode.setSelection(1)
             }
             else -> {}
         }
@@ -59,20 +53,10 @@ class MainActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 when (p2) {
                     0 -> {
-                        // hidden
                         AgoraApplication.the()?.sliceMode = AGSlicingType.VISIABLE
                     }
                     1 -> {
-                        // fit
-                        AgoraApplication.the()?.sliceMode = AGSlicingType.END_DRAG
-                    }
-                    2 -> {
-                        // fit
                         AgoraApplication.the()?.sliceMode = AGSlicingType.END_SCROLL
-                    }
-                    3 -> {
-                        // fit
-                        AgoraApplication.the()?.sliceMode = AGSlicingType.NEVER
                     }
                 }
             }
