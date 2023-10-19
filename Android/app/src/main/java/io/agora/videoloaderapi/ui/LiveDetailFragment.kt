@@ -2,21 +2,19 @@ package io.agora.videoloaderapi.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.*
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import io.agora.rtc2.IRtcEngineEventHandler
-import io.agora.rtc2.RtcConnection
 import io.agora.videoloaderapi.AnchorState
 import io.agora.videoloaderapi.OnPageScrollEventHandler
 import io.agora.videoloaderapi.R
 import io.agora.videoloaderapi.VideoLoader
 import io.agora.videoloaderapi.databinding.ShowLiveDetailFragmentBinding
 import io.agora.videoloaderapi.rtc.RtcEngineInstance
+import io.agora.videoloaderapi.service.ShowInteractionStatus
 import io.agora.videoloaderapi.service.ShowRoomDetailModel
-import io.agora.videoloaderapi.service.ShowServiceProtocol
 
 class LiveDetailFragment : Fragment() {
     private val TAG = this.toString()
@@ -32,25 +30,22 @@ class LiveDetailFragment : Fragment() {
             mHandler = handler
             mPosition = position
         }
-
     }
 
-    val mRoomInfo by lazy { (arguments?.getParcelable(EXTRA_ROOM_DETAIL_INFO) as? ShowRoomDetailModel)!! }
+    private val mRoomInfo by lazy { (arguments?.getParcelable(EXTRA_ROOM_DETAIL_INFO) as? ShowRoomDetailModel)!! }
     private lateinit var mHandler: OnPageScrollEventHandler
     private var mPosition: Int = 0
     private val mBinding by lazy {
         ShowLiveDetailFragmentBinding.inflate(LayoutInflater.from(requireContext())
         )
     }
-    private val mService by lazy { ShowServiceProtocol.getImplInstance() }
     private val isRoomOwner by lazy { mRoomInfo.ownerId == RtcEngineInstance.localUid().toString() }
-
 
     private val mRtcEngine by lazy { RtcEngineInstance.rtcEngine }
     private val mRtcVideoSwitcher by lazy { VideoLoader.getImplInstance(mRtcEngine) }
 
     private var isPageLoaded = false
-    private val mMainRtcConnection by lazy { RtcConnection(mRoomInfo.roomId, RtcEngineInstance.localUid()) }
+    private var needRender = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,33 +76,18 @@ class LiveDetailFragment : Fragment() {
         Log.d(TAG, "Fragment Lifecycle: onDetach")
     }
 
-    private fun runOnUiThread(run: Runnable) {
-        val activity = activity ?: return
-        if (Thread.currentThread() == Looper.getMainLooper().thread) {
-            run.run()
-        } else {
-            activity.runOnUiThread(run)
-        }
-    }
-
-    fun startLoadPageSafely(){
-        isPageLoaded = true
-        activity ?: return
-        startLoadPage()
+    fun startLoadPageSafely() {
+        // TODO 页面创建
     }
 
     fun onPageLoaded() {
+        // TODO 页面加载完成
         //updatePKingMode()
     }
 
     private fun startLoadPage(){
         Log.d(TAG, "Fragment PageLoad start load, roomId=${mRoomInfo.roomId}")
         isPageLoaded = true
-
-        if (mRoomInfo.isRobotRoom()) {
-            joinRtcChannel {}
-            //initServiceWithJoinRoom()
-        }
     }
 
     fun stopLoadPage(isScrolling: Boolean){
@@ -130,46 +110,14 @@ class LiveDetailFragment : Fragment() {
     //================== UI Operation ===============
 
     private fun initView() {
-        activity?.let {
-            mRtcVideoSwitcher.renderVideo(
-                VideoLoader.AnchorInfo(
-                    mRoomInfo.roomId,
-                    mRoomInfo.ownerId.toInt(),
-                    RtcEngineInstance.generalToken()
-                ),
-                RtcEngineInstance.localUid(),
-                VideoLoader.VideoCanvasContainer(
-                    it,
-                    mBinding.videoLinkingLayout.videoContainer,
-                    mRoomInfo.ownerId.toInt()
-                )
-            )
+        if (needRender) {
+            needRender = false
+            initVideoView()
         }
-
-        initVideoView()
         initTopLayout()
-    }
-
-    fun initVideoView() : VideoLoader.VideoCanvasContainer?{
-        activity?.let {
-            return VideoLoader.VideoCanvasContainer(
-                it,
-                mBinding.videoLinkingLayout.videoContainer,
-                mRoomInfo.ownerId.toInt()
-            )
+        if (mRoomInfo.interactStatus == ShowInteractionStatus.pking.value) {
+            refreshViewDetailLayout(2)
         }
-        return null
-    }
-
-    fun initAnchorVideoView(info: VideoLoader.AnchorInfo) : VideoLoader.VideoCanvasContainer? {
-        activity?.let {
-            return VideoLoader.VideoCanvasContainer(
-                it,
-                mBinding.videoLinkingLayout.videoContainer,
-                mRoomInfo.ownerId.toInt()
-            )
-        }
-        return null
     }
 
     private fun initTopLayout() {
@@ -183,23 +131,97 @@ class LiveDetailFragment : Fragment() {
         topLayout.ivClose.setOnClickListener { onBackPressed() }
     }
 
-    //================== RTC Operation ===================
-
-    private fun joinRtcChannel(onJoinChannelSuccess: () -> Unit) {
-        if (activity is LiveDetailActivity){
-            (activity as LiveDetailActivity).toggleSelfVideo(false, callback = {
-                // Render host video
-                mRtcEngine.addHandlerEx(object : IRtcEngineEventHandler() {}, mMainRtcConnection)
-                initVideoView()
-                //mRtcEngine.adjustUserPlaybackSignalVolumeEx(mRoomInfo.ownerId.toInt(), 100, mMainRtcConnection)
-            })
-            (activity as LiveDetailActivity).toggleSelfAudio(false, callback = {
-              // nothing
-            })
+    private fun initVideoView() {
+        activity?.let {
+            if ((mRoomInfo.interactStatus == ShowInteractionStatus.pking.value)) {
+                mRtcVideoSwitcher.renderVideo(
+                    VideoLoader.AnchorInfo(
+                        mRoomInfo.roomId,
+                        mRoomInfo.ownerId.toInt(),
+                        RtcEngineInstance.generalToken()
+                    ),
+                    RtcEngineInstance.localUid(),
+                    VideoLoader.VideoCanvasContainer(
+                        it,
+                        mBinding.videoPKLayout.iBroadcasterAView,
+                        mRoomInfo.ownerId.toInt()
+                    )
+                )
+                mRtcVideoSwitcher.renderVideo(
+                    VideoLoader.AnchorInfo(
+                        mRoomInfo.interactRoomName,
+                        mRoomInfo.ownerId.toInt(),
+                        RtcEngineInstance.generalToken()
+                    ),
+                    RtcEngineInstance.localUid(),
+                    VideoLoader.VideoCanvasContainer(
+                        it,
+                        mBinding.videoPKLayout.iBroadcasterBView,
+                        mRoomInfo.ownerId.toInt()
+                    )
+                )
+            } else {
+                mRtcVideoSwitcher.renderVideo(
+                    VideoLoader.AnchorInfo(
+                        mRoomInfo.roomId,
+                        mRoomInfo.ownerId.toInt(),
+                        RtcEngineInstance.generalToken()
+                    ),
+                    RtcEngineInstance.localUid(),
+                    VideoLoader.VideoCanvasContainer(
+                        it,
+                        mBinding.videoLinkingLayout.videoContainer,
+                        mRoomInfo.ownerId.toInt()
+                    )
+                )
+            }
         }
     }
 
+    private fun refreshViewDetailLayout(status: Int) {
+        when (status) {
+            ShowInteractionStatus.idle.value -> {
+                mBinding.videoPKLayout.root.isVisible = false
+                mBinding.videoLinkingLayout.root.isVisible = true
+            }
+            ShowInteractionStatus.pking.value -> {
+                mBinding.topLayout.root.bringToFront()
+                mBinding.videoLinkingLayout.root.isVisible = false
+                mBinding.videoPKLayout.root.isVisible = true
+            }
+        }
+    }
 
+    fun initAnchorVideoView(info: VideoLoader.AnchorInfo) : VideoLoader.VideoCanvasContainer? {
+        // 判断是否此时view还没有创建，即在View创建后第一时间渲染视频
+        needRender = activity == null
+        activity?.let {
+            if ((mRoomInfo.interactStatus == ShowInteractionStatus.pking.value)) {
+                if (info.channelId == mRoomInfo.roomId) {
+                    return VideoLoader.VideoCanvasContainer(
+                        it,
+                        mBinding.videoPKLayout.iBroadcasterAView,
+                        mRoomInfo.ownerId.toInt()
+                    )
+                } else if (info.channelId == mRoomInfo.interactRoomName) {
+                    return VideoLoader.VideoCanvasContainer(
+                        it,
+                        mBinding.videoPKLayout.iBroadcasterBView,
+                        mRoomInfo.ownerId.toInt()
+                    )
+                }
+            } else {
+                return VideoLoader.VideoCanvasContainer(
+                    it,
+                    mBinding.videoLinkingLayout.videoContainer,
+                    mRoomInfo.ownerId.toInt()
+                )
+            }
+        }
+        return null
+    }
+
+    //================== RTC Operation ===================
     private fun destroyRtcEngine(isScrolling: Boolean): Boolean {
         if (!isRoomOwner) return true;
         mRtcEngine.stopPreview()

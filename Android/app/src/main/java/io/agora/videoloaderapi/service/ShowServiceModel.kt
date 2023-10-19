@@ -34,6 +34,7 @@ data class ShowRoomDetailModel constructor(
     val ownerName: String,
     val roomStatus: Int = ShowRoomStatus.activity.value,
     val interactStatus: Int = ShowInteractionStatus.idle.value,
+    val interactRoomName: String,
     val createdAt: Double,
     val updatedAt: Double
 ) : Parcelable {
@@ -48,6 +49,7 @@ data class ShowRoomDetailModel constructor(
         parcel.readString()?:"",
         parcel.readInt(),
         parcel.readInt(),
+        parcel.readString()?:"",
         parcel.readDouble(),
         parcel.readDouble()
     ) {
@@ -83,6 +85,7 @@ data class ShowRoomDetailModel constructor(
         parcel.writeString(ownerName)
         parcel.writeInt(roomStatus)
         parcel.writeInt(interactStatus)
+        parcel.writeString(interactRoomName)
         parcel.writeDouble(createdAt)
         parcel.writeDouble(updatedAt)
     }
