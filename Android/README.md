@@ -16,21 +16,21 @@ VideoLoaderAPI 即秒开秒切场景化api, 该模块旨在帮助视频直播开
 
 - <mark>1. </mark> 获取声网App ID -------- [声网Agora - 文档中心 - 如何获取 App ID](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms#%E8%8E%B7%E5%8F%96-app-id)
 
-  > - 点击创建应用
-  >
-  >   ![xxx](image/SamplePicture2.png)
-  >
-  > - 选择你要创建的应用类型
-  >
-  >   ![xxx](image/SamplePicture3.png)
-  >
-  > - 得到App ID与App 证书
-  >
-  >   ![xxx](image/SamplePicture4.png)
-  >
-  > - 秒切机器人服务配置（CloudPlayer）
-  >
-  >   ![xxx](image/SamplePicture6.png)
+   - 点击创建应用
+  
+   ![xxx](image/SamplePicture2.png)
+  
+   - 选择你要创建的应用类型
+  
+   ![xxx](image/SamplePicture3.png)
+  
+   - 得到App ID与App 证书
+  
+   ![xxx](image/SamplePicture4.png)
+  
+   - 秒切机器人服务配置（CloudPlayer）
+  
+   ![xxx](image/SamplePicture6.png)
 
   获取App 证书 ----- [声网Agora - 文档中心 - 获取 App 证书](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms#%E8%8E%B7%E5%8F%96-app-%E8%AF%81%E4%B9%A6)
 - <mark>2. </mark> 在项目的[**gradle.properties**](../../gradle.properties)里填写需要的声网 App ID 和 App证书、Cloudplayer 配置  
