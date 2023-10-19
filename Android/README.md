@@ -60,9 +60,9 @@ VideoLoaderAPI 即秒开秒切场景化api, 该模块旨在帮助视频直播开
 >
 >   相关代码请参考：[RoomListActivity](app/src/main/java/io/agora/videoloaderapi/ui/RoomListActivity.kt) 
 >   
->- 秒切
+> - 秒切
 > 
->  相关代码请参考：[LiveDetailActivity](app/src/main/java/io/agora/videoloaderapi/ui/LiveDetailActivity.kt) 中的 OnPageChangeCallback 的实现。
+>   相关代码请参考：[LiveDetailActivity](app/src/main/java/io/agora/videoloaderapi/ui/LiveDetailActivity.kt) 中的 OnPageChangeCallback 的实现。
 
 
 
