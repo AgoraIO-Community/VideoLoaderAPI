@@ -55,6 +55,8 @@ class ShowSyncManagerServiceImpl: ShowServiceProtocol {
         for (i in 0 until robotRoomIds.size) {
             val robotRoomId = robotRoomIds[i]
             val robotId = robotRoomId % 10
+            val interactionRoomName = if (i == 0) robotRoomIds[1].toString() else ""
+            val interactionStatus = if (i == 0) ShowInteractionStatus.pking.value else ShowInteractionStatus.idle.value
             val roomInfo = ShowRoomDetailModel(
                 robotRoomId.toString(), // roomId
                 "Smooth $robotId", // roomName
@@ -64,7 +66,8 @@ class ShowSyncManagerServiceImpl: ShowServiceProtocol {
                 kRobotAvatars[(robotId - 1) % kRobotAvatars.size],
                 "Robot $robotId",
                 ShowRoomStatus.activity.value,
-                ShowInteractionStatus.idle.value,
+                interactionStatus,
+                interactionRoomName,
                 0.0,
                 0.0
             )
@@ -73,7 +76,6 @@ class ShowSyncManagerServiceImpl: ShowServiceProtocol {
         }
         return retRoomList
     }
-
 
     override fun startCloudPlayer() {
         for (i in 0 until kRobotVideoRoomIds.size) {

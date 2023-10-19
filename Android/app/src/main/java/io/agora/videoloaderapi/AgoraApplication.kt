@@ -11,6 +11,9 @@ class AgoraApplication : Application() {
         }
     }
 
+    var needPreJoin: Boolean = false
+    var sliceMode: AGSlicingType = AGSlicingType.VISIABLE
+
     override fun onCreate() {
         super.onCreate()
         sInstance = this

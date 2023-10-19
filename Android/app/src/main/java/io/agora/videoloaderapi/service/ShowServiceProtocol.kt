@@ -1,7 +1,5 @@
 package io.agora.videoloaderapi.service
 
-import android.app.Application
-
 interface ShowServiceProtocol {
 
     companion object {

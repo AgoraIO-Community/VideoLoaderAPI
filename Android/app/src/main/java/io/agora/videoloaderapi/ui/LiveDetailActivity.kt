@@ -15,11 +15,12 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import io.agora.videoloaderapi.AGSlicingType
+import io.agora.videoloaderapi.AgoraApplication
 import io.agora.videoloaderapi.OnPageScrollEventHandler
 import io.agora.videoloaderapi.VideoLoader
 import io.agora.videoloaderapi.databinding.ShowLiveDetailActivityBinding
 import io.agora.videoloaderapi.rtc.RtcEngineInstance
+import io.agora.videoloaderapi.service.ShowInteractionStatus
 import io.agora.videoloaderapi.service.ShowRoomDetailModel
 import io.agora.videoloaderapi.utils.RunnableWithDenied
 import io.agora.videoloaderapi.utils.TokenGenerator
@@ -28,18 +29,13 @@ import io.agora.videoloaderapi.widget.BaseViewBindingActivity
 
 class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding>(),
     LiveDetailFragment.OnMeLinkingListener {
-    private val TAG = "LiveDetailActivity"
+    private val tag = "LiveDetailActivity"
 
     companion object {
         private const val EXTRA_ROOM_DETAIL_INFO_LIST = "roomDetailInfoList"
         private const val EXTRA_ROOM_DETAIL_INFO_LIST_SELECTED_INDEX =
             "roomDetailInfoListSelectedIndex"
         private const val EXTRA_ROOM_DETAIL_INFO_LIST_SCROLLABLE = "roomDetailInfoListScrollable"
-
-
-        fun launch(context: Context, roomDetail: ShowRoomDetailModel) {
-            launch(context, arrayListOf(roomDetail), 0, false)
-        }
 
         fun launch(
             context: Context,
@@ -87,40 +83,10 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
         }
     }
 
-
-    fun toggleSelfVideo(isOpen: Boolean, callback : (result:Boolean) -> Unit) {
-        if (isOpen) {
-            toggleVideoRun = object :RunnableWithDenied(){
-                override fun onDenied() {
-                    callback.invoke(false)
-                }
-
-                override fun run() {
-                    callback.invoke(true)
-                }
-            }
-            requestCameraPermission(true)
-        } else {
-            callback.invoke(true)
-        }
-    }
-
-    fun toggleSelfAudio(isOpen: Boolean, callback : () -> Unit) {
-        if (isOpen) {
-            toggleAudioRun = Runnable {
-                callback.invoke()
-            }
-            requestRecordPermission(true)
-        } else {
-            callback.invoke()
-        }
-    }
     override fun onPermissionDined(permission: String?) {
         if (toggleVideoRun != null && permission == Manifest.permission.CAMERA) {
             toggleVideoRun?.onDenied()
         }
-//        PermissionLeakDialog(this).show(permission, { getPermissions() }
-//        ) { launchAppSetting(permission) }
     }
 
     override fun onMeLinking(isLinking: Boolean) {
@@ -134,7 +100,7 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.viewPager2) { v: View?, insets: WindowInsetsCompat ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.viewPager2) { _: View?, insets: WindowInsetsCompat ->
             val inset = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.viewPager2.setPaddingRelative(inset.left, 0, inset.right, inset.bottom)
             WindowInsetsCompat.CONSUMED
@@ -143,29 +109,33 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
 
         val selectedRoomIndex = intent.getIntExtra(EXTRA_ROOM_DETAIL_INFO_LIST_SELECTED_INDEX, 0)
 
-        onPageScrollEventHandler = object : OnPageScrollEventHandler(this, RtcEngineInstance.rtcEngine, RtcEngineInstance.localUid(), true,
-            AGSlicingType.VISIABLE
+        val needPreJoin = AgoraApplication.the()?.needPreJoin == true
+        onPageScrollEventHandler = object : OnPageScrollEventHandler(this, RtcEngineInstance.rtcEngine, RtcEngineInstance.localUid(), needPreJoin,
+            AgoraApplication.the()?.sliceMode!!
         ) {
             override fun onPageScrollStateChanged(state: Int) {
-                when(state){
+                when (state) {
                     ViewPager2.SCROLL_STATE_SETTLING -> binding.viewPager2.isUserInputEnabled = false
                     ViewPager2.SCROLL_STATE_IDLE -> binding.viewPager2.isUserInputEnabled = true
+                    ViewPager2.SCROLL_STATE_DRAGGING -> {
+                        // TODO 暂不支持
+                    }
                 }
                 super.onPageScrollStateChanged(state)
             }
 
             override fun onPageStartLoading(position: Int) {
-                Log.d(TAG, "onPageLoad, position:$position")
+                Log.d(tag, "onPageLoad, position:$position")
                 vpFragments[position]?.startLoadPageSafely()
             }
 
             override fun onPageLoaded(position: Int) {
-                Log.d(TAG, "onPageReLoad, position:$position")
+                Log.d(tag, "onPageReLoad, position:$position")
                 vpFragments[position]?.onPageLoaded()
             }
 
             override fun onPageLeft(position: Int) {
-                Log.d(TAG, "onPageHide, position:$position")
+                Log.d(tag, "onPageHide, position:$position")
                 vpFragments[position]?.stopLoadPage(true)
             }
 
@@ -173,22 +143,29 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
                 position: Int,
                 info: VideoLoader.AnchorInfo
             ): VideoLoader.VideoCanvasContainer? {
+                Log.d(tag, "onRequireRenderVideo, position:$position")
                 return vpFragments[position]?.initAnchorVideoView(info)
             }
         }
 
         val list = ArrayList<VideoLoader.RoomInfo>()
         mRoomInfoList.forEach {
-            list.add(
-                VideoLoader.RoomInfo(
-                    it.roomId, arrayListOf(
-                        VideoLoader.AnchorInfo(
-                            it.roomId,
-                            it.ownerId.toInt(),
-                            RtcEngineInstance.generalToken()
-                        )
-                    )
+            val anchorList = arrayListOf(
+                VideoLoader.AnchorInfo(
+                    it.roomId,
+                    it.ownerId.toInt(),
+                    RtcEngineInstance.generalToken()
                 )
+            )
+            if (it.interactStatus == ShowInteractionStatus.pking.value) {
+                anchorList.add(VideoLoader.AnchorInfo(
+                    it.interactRoomName,
+                    it.ownerId.toInt(),
+                    RtcEngineInstance.generalToken()
+                ))
+            }
+            list.add(
+                VideoLoader.RoomInfo(it.roomId, anchorList)
             )
         }
         onPageScrollEventHandler?.updateRoomList(list)
@@ -208,22 +185,27 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
                     roomInfo,
                     onPageScrollEventHandler as OnPageScrollEventHandler, position
                 ).apply {
-                    Log.d("pig", "position：$position, room:${roomInfo.roomId}")
+                    Log.d(tag, "position：$position, room:${roomInfo.roomId}")
                     vpFragments.put(position, this)
+                    val anchorList = arrayListOf(
+                        VideoLoader.AnchorInfo(
+                            roomInfo.roomId,
+                            roomInfo.ownerId.toInt(),
+                            RtcEngineInstance.generalToken()
+                        )
+                    )
+                    if (roomInfo.interactStatus == ShowInteractionStatus.pking.value) {
+                        anchorList.add(VideoLoader.AnchorInfo(
+                            roomInfo.interactRoomName,
+                            roomInfo.ownerId.toInt(),
+                            RtcEngineInstance.generalToken()
+                        ))
+                    }
                     onPageScrollEventHandler?.onRoomCreated(position,
                         VideoLoader.RoomInfo(
                             roomInfo.roomId,
-                            arrayListOf(
-                                VideoLoader.AnchorInfo(
-                                    roomInfo.roomId,
-                                    roomInfo.ownerId.toInt(),
-                                    RtcEngineInstance.generalToken()
-                                )
-                            )
+                            anchorList
                         ),position == binding.viewPager2.currentItem)
-                    if (position == binding.viewPager2.currentItem) {
-                        startLoadPageSafely()
-                    }
                 }
             }
         }
