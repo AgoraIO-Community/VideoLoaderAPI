@@ -132,7 +132,6 @@ class RoomListActivity : AppCompatActivity() {
         binding.ivCover.setImageResource(roomInfo.getThumbnailIcon())
 
         val onTouchEventHandler = object : OnLiveRoomItemTouchEventHandler(
-            this,
             mRtcEngine,
             VideoLoader.RoomInfo(
                 roomInfo.roomId,
