@@ -8,6 +8,9 @@
 import AgoraRtcKit
 import VideoLoaderAPI
 
+private let kRoomCount: Int = 12
+private let kRandomCount: Int = 16
+
 class RoomCollectionListViewController: UIViewController {
     private var roomList: [RoomListModel] = [] {
         didSet {
@@ -94,7 +97,7 @@ class RoomCollectionListViewController: UIViewController {
                 return
             }
             var list: [RoomListModel] = []
-            for i in 0...12 {
+            for i in 0...kRoomCount {
                 let room = RoomListModel()
                 let anchor = AnchorInfo()
                 anchor.uid = kRobotUid
@@ -111,8 +114,8 @@ class RoomCollectionListViewController: UIViewController {
     private func updateRoomPkList(roomInfo: RoomListModel) {
         let ownerAnchorInfo = roomInfo.anchorInfoList.first!
         roomInfo.anchorInfoList = [ownerAnchorInfo]
-        let pkChannelIdx = Int(arc4random_uniform(18))
-        if pkChannelIdx < 12 {
+        let pkChannelIdx = Int(arc4random_uniform(UInt32(kRoomCount + 4)))
+        if pkChannelIdx < kRoomCount {
             let channelName = "\(ShowRobotService.robotRoomId(pkChannelIdx))"
             if channelName == roomInfo.channelName() {
                 return
