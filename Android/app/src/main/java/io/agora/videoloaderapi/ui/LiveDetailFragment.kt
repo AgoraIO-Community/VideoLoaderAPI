@@ -39,7 +39,6 @@ class LiveDetailFragment : Fragment() {
         ShowLiveDetailFragmentBinding.inflate(LayoutInflater.from(requireContext())
         )
     }
-    private val isRoomOwner by lazy { mRoomInfo.ownerId == RtcEngineInstance.localUid().toString() }
 
     private val mRtcEngine by lazy { RtcEngineInstance.rtcEngine }
     private val mRtcVideoSwitcher by lazy { VideoLoader.getImplInstance(mRtcEngine) }
@@ -82,7 +81,6 @@ class LiveDetailFragment : Fragment() {
 
     fun onPageLoaded() {
         // TODO 页面加载完成
-        //updatePKingMode()
     }
 
     private fun startLoadPage(){
@@ -93,14 +91,9 @@ class LiveDetailFragment : Fragment() {
     fun stopLoadPage(isScrolling: Boolean){
         Log.d(TAG, "Fragment PageLoad stop load, roomId=${mRoomInfo.roomId}")
         isPageLoaded = false
-        destroy(isScrolling) // 切页或activity销毁
-    }
-
-    private fun destroy(isScrolling: Boolean): Boolean {
         mBinding.root.postDelayed({
             mBinding.videoLinkingLayout.videoContainer.removeAllViews()
         }, 200)
-        return destroyRtcEngine(isScrolling)
     }
 
     private fun onBackPressed() {
@@ -142,7 +135,7 @@ class LiveDetailFragment : Fragment() {
                     ),
                     RtcEngineInstance.localUid(),
                     VideoLoader.VideoCanvasContainer(
-                        it,
+                        viewLifecycleOwner,
                         mBinding.videoPKLayout.iBroadcasterAView,
                         mRoomInfo.ownerId.toInt()
                     )
@@ -155,7 +148,7 @@ class LiveDetailFragment : Fragment() {
                     ),
                     RtcEngineInstance.localUid(),
                     VideoLoader.VideoCanvasContainer(
-                        it,
+                        viewLifecycleOwner,
                         mBinding.videoPKLayout.iBroadcasterBView,
                         mRoomInfo.ownerId.toInt()
                     )
@@ -169,7 +162,7 @@ class LiveDetailFragment : Fragment() {
                     ),
                     RtcEngineInstance.localUid(),
                     VideoLoader.VideoCanvasContainer(
-                        it,
+                        viewLifecycleOwner,
                         mBinding.videoLinkingLayout.videoContainer,
                         mRoomInfo.ownerId.toInt()
                     )
@@ -199,20 +192,20 @@ class LiveDetailFragment : Fragment() {
             if ((mRoomInfo.interactStatus == ShowInteractionStatus.pking.value)) {
                 if (info.channelId == mRoomInfo.roomId) {
                     return VideoLoader.VideoCanvasContainer(
-                        it,
+                        viewLifecycleOwner,
                         mBinding.videoPKLayout.iBroadcasterAView,
                         mRoomInfo.ownerId.toInt()
                     )
                 } else if (info.channelId == mRoomInfo.interactRoomName) {
                     return VideoLoader.VideoCanvasContainer(
-                        it,
+                        viewLifecycleOwner,
                         mBinding.videoPKLayout.iBroadcasterBView,
                         mRoomInfo.ownerId.toInt()
                     )
                 }
             } else {
                 return VideoLoader.VideoCanvasContainer(
-                    it,
+                    viewLifecycleOwner,
                     mBinding.videoLinkingLayout.videoContainer,
                     mRoomInfo.ownerId.toInt()
                 )
@@ -222,17 +215,6 @@ class LiveDetailFragment : Fragment() {
     }
 
     //================== RTC Operation ===================
-    private fun destroyRtcEngine(isScrolling: Boolean): Boolean {
-        if (!isRoomOwner) return true;
-        mRtcEngine.stopPreview()
-        mRtcVideoSwitcher.switchAnchorState(if (isScrolling) AnchorState.PRE_JOINED else AnchorState.IDLE,
-            VideoLoader.AnchorInfo(
-                mRoomInfo.roomId,
-                mRoomInfo.ownerId.toInt(),
-                RtcEngineInstance.generalToken()
-            ), RtcEngineInstance.localUid(), context)
-        return true
-    }
 
     private var onMeLinkingListener: OnMeLinkingListener? = null
 
