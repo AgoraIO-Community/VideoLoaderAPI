@@ -14,7 +14,7 @@ import java.util.*
  * @param IDLE 默认状态
  * @param PRE_JOINED 预加入房间状态
  * @param JOINED 已进入房间状态
- * @param JOINED_WITHOUT_AUDIO 不订阅音频
+ * @param JOINED_WITHOUT_AUDIO 不播放音频
  */
 enum class AnchorState {
     IDLE,
