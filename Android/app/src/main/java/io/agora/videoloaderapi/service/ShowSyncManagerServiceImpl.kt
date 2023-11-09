@@ -8,14 +8,14 @@ class ShowSyncManagerServiceImpl: ShowServiceProtocol {
 
     private val kRobotAvatars = listOf("https://download.agora.io/demo/release/bot1.png")
     private val kRobotUid = 2000000001
-    private val kRobotVideoRoomIds = arrayListOf(2001001, 2001002, 2001003, 2001004, 2001005, 2001006)
+    private val kRobotVideoRoomIds = arrayListOf(1001001, 1001002, 1001003, 1001004, 1001005, 1001006)
     private val kRobotVideoStreamUrls = arrayListOf(
         "https://download.agora.io/demo/release/agora_test_video_20_music.mp4",
         "https://download.agora.io/demo/release/agora_test_video_21_music.mp4",
         "https://download.agora.io/demo/release/agora_test_video_22_music.mp4",
-        "https://download.agora.io/demo/test/agora_test_video_13.mp4",
-        "https://download.agora.io/demo/test/agora_test_video_14.mp4",
-        "https://download.agora.io/demo/test/agora_test_video_15.mp4"
+        "https://download.agora.io/sdk/release/agora_test_video_12.mp4",
+        "https://download.agora.io/sdk/release/agora_test_video_11.mp4",
+        "https://download.agora.io/sdk/release/agora_test_video_10.mp4"
     )
 
     private val cloudPlayerService by lazy { CloudPlayerService() }
