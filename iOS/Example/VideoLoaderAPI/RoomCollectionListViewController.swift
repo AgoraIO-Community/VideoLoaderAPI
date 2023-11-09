@@ -101,21 +101,27 @@ class RoomCollectionListViewController: UIViewController {
                 anchor.channelName = "\(ShowRobotService.robotRoomId(i))"
                 anchor.token = token
                 room.anchorInfoList = [anchor]
-                let pkChannelIdx = Int(arc4random_uniform(24))
-                if pkChannelIdx < 12 {
-                    let channelName = "\(ShowRobotService.robotRoomId(pkChannelIdx))"
-                    if channelName == anchor.channelName {
-                        continue
-                    }
-                    let pkAnchor = AnchorInfo()
-                    pkAnchor.uid = kRobotUid
-                    pkAnchor.channelName = channelName
-                    pkAnchor.token = token
-                    room.anchorInfoList.append(pkAnchor)
-                }
                 list.append(room)
+                self.updateRoomPkList(roomInfo: room)
             }
             self.roomList = list
+        }
+    }
+    
+    private func updateRoomPkList(roomInfo: RoomListModel) {
+        let ownerAnchorInfo = roomInfo.anchorInfoList.first!
+        roomInfo.anchorInfoList = [ownerAnchorInfo]
+        let pkChannelIdx = Int(arc4random_uniform(18))
+        if pkChannelIdx < 12 {
+            let channelName = "\(ShowRobotService.robotRoomId(pkChannelIdx))"
+            if channelName == roomInfo.channelName() {
+                return
+            }
+            let pkAnchor = AnchorInfo()
+            pkAnchor.uid = kRobotUid
+            pkAnchor.channelName = channelName
+            pkAnchor.token = ownerAnchorInfo.token
+            roomInfo.anchorInfoList.append(pkAnchor)
         }
     }
     
@@ -141,6 +147,10 @@ extension RoomCollectionListViewController: UICollectionViewDataSource {
         } completion: { [weak self] in
             guard let self = self else {return}
             let vc = RoomCollectionViewController()
+            vc.randomPKClosure = {[weak self] roomInfo in
+                guard let self = self else {return}
+                self.updateRoomPkList(roomInfo: roomInfo)
+            }
             vc.roomList = self.roomList
             vc.focusIndex = indexPath.row
             self.navigationController?.pushViewController(vc, animated: true)

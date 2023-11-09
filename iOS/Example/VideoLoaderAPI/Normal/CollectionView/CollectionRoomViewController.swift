@@ -10,6 +10,7 @@ import AgoraRtcKit
 import VideoLoaderAPI
 
 class RoomCollectionViewController: UIViewController {
+    var randomPKClosure: ((RoomListModel)->())?
     var origRoomList: [RoomListModel]?
     var roomList: [RoomListModel]? {
         didSet {
@@ -77,30 +78,21 @@ class RoomCollectionViewController: UIViewController {
         view.addSubview(listView)
         listView.scrollToItem(at: IndexPath(row: focusIndex, section: 0), at: .centeredVertically, animated: false)
         
-        let button = UIButton(type: .custom)
-        button.setTitle("close", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        view.addSubview(button)
-        button.backgroundColor = .blue
-        button.frame = CGRect(x: 10, y: 80, width: 100, height: 40)
-        button.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
+        let button1 = UIButton(type: .custom)
+        button1.setTitle("close", for: .normal)
+        button1.setTitleColor(.white, for: .normal)
+        view.addSubview(button1)
+        button1.backgroundColor = .blue
+        button1.frame = CGRect(x: 10, y: 80, width: 100, height: 40)
+        button1.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
         
-        
-//        let button1 = UIButton(type: .custom)
-//        button1.setTitle("refresh", for: .normal)
-//        button1.setTitleColor(.white, for: .normal)
-//        view.addSubview(button1)
-//        button1.backgroundColor = .blue
-//        button1.frame = CGRect(x: 10, y: 130, width: 100, height: 40)
-//        button1.addTarget(self, action: #selector(refreshAction), for: .touchUpInside)
-//        
-//        let button2 = UIButton(type: .custom)
-//        button2.setTitle("load more", for: .normal)
-//        button2.setTitleColor(.white, for: .normal)
-//        view.addSubview(button2)
-//        button2.backgroundColor = .blue
-//        button2.frame = CGRect(x: 10, y: 180, width: 100, height: 40)
-//        button2.addTarget(self, action: #selector(reloadAction), for: .touchUpInside)
+        let button2 = UIButton(type: .custom)
+        button2.setTitle("random pk", for: .normal)
+        button2.setTitleColor(.white, for: .normal)
+        view.addSubview(button2)
+        button2.backgroundColor = .blue
+        button2.frame = CGRect(x: 120, y: 80, width: 100, height: 40)
+        button2.addTarget(self, action: #selector(randomPKAction), for: .touchUpInside)
         
         view.addSubview(label)
     }
@@ -115,21 +107,17 @@ class RoomCollectionViewController: UIViewController {
         navigationController?.popViewController(animated: false)
     }
     
-//    @objc func refreshAction() {
-//        self.roomList = origRoomList!
-//        listView.reloadData()
-//    }
-//    
-//    @objc func reloadAction() {
-//        var appendIdxPath = [IndexPath]()
-//        let roomList = origRoomList!
-//        let totalCount = delegateHandler.roomList!.count()
-//        for (i, _) in roomList.enumerated() {
-//            appendIdxPath.append(IndexPath(row: i + totalCount, section: 0))
-//        }
-//        self.roomList = self.roomList! + roomList
-//        listView.insertItems(at: appendIdxPath)
-//    }
+    @objc func randomPKAction() {
+        guard let indexPath = listView.indexPathsForVisibleItems.first,
+                  let cell = listView.cellForItem(at: indexPath) as? TestRoomCollectionViewCell,
+                  let room = roomList?[indexPath.row] else {return}
+        randomPKClosure?(room)
+        let list = self.roomList
+        self.roomList = list
+        cell.titleLabel.text = "roomId:\(room.channelName())\n index:\(indexPath.row)"
+        cell.broadcasterCount = room.anchorInfoList.count
+        print("randomPKAction[\(room.channelName())] pk channelName: \(room.anchorInfoList.count > 1 ? room.anchorInfoList.last!.channelName : "none")")
+    }
 }
 
 extension RoomCollectionViewController: UICollectionViewDataSource {
