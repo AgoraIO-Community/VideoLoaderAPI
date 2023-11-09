@@ -110,7 +110,7 @@ class LiveDetailActivity : BaseViewBindingActivity<ShowLiveDetailActivityBinding
         val selectedRoomIndex = intent.getIntExtra(EXTRA_ROOM_DETAIL_INFO_LIST_SELECTED_INDEX, 0)
 
         val needPreJoin = AgoraApplication.the()?.needPreJoin == true
-        onPageScrollEventHandler = object : OnPageScrollEventHandler(this, RtcEngineInstance.rtcEngine, RtcEngineInstance.localUid(), needPreJoin,
+        onPageScrollEventHandler = object : OnPageScrollEventHandler(RtcEngineInstance.rtcEngine, RtcEngineInstance.localUid(), needPreJoin,
             AgoraApplication.the()?.sliceMode!!
         ) {
             override fun onPageScrollStateChanged(state: Int) {

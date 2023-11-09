@@ -1,6 +1,5 @@
 package io.agora.videoloaderapi
 
-import android.content.Context
 import android.util.Log
 import android.view.TextureView
 import android.view.View
@@ -13,7 +12,7 @@ import java.util.*
 /**
  * 房间状态
  * @param IDLE 默认状态
- * @param PREJOINED 预加入房间状态
+ * @param PRE_JOINED 预加入房间状态
  * @param JOINED 已进入房间状态
  * @param JOINED_WITHOUT_AUDIO 不订阅音频
  */
@@ -28,12 +27,10 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
     private val tag = "VideoLoaderImpl"
     private val anchorStateMap = Collections.synchronizedMap(mutableMapOf<RtcConnectionWrap, AnchorState>())
     private val remoteVideoCanvasList = Collections.synchronizedList(mutableListOf<RemoteVideoCanvasWrap>())
-    private var needSubscribe = false
-    private var needSubscribeConnection: RtcConnection? = null
 
     override fun cleanCache() {
         anchorStateMap.forEach {
-            innerSwitchAnchorState(AnchorState.IDLE, it.key, null, null, null, null)
+            innerSwitchAnchorState(AnchorState.IDLE, 0, it.key, null, null)
         }
         anchorStateMap.clear()
     }
@@ -48,9 +45,8 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         newState: AnchorState,
         anchorInfo: VideoLoader.AnchorInfo,
         uid: Int,
-        context: Context?
-    ) {
-        innerSwitchAnchorState(newState, RtcConnection(anchorInfo.channelId, uid), anchorInfo.token, anchorInfo.anchorUid, null, context)
+) {
+        innerSwitchAnchorState(newState, anchorInfo.anchorUid, RtcConnection(anchorInfo.channelId, uid), anchorInfo.token, null)
     }
 
     override fun renderVideo(anchorInfo: VideoLoader.AnchorInfo, localUid: Int, container: VideoLoader.VideoCanvasContainer) {
@@ -61,14 +57,15 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             val videoView = it.view
             val viewIndex = container.container.indexOfChild(videoView)
 
+            Log.d("siyu", "setupRemoteVideoEx111: viewIndex$viewIndex, container.viewIndex:${container.viewIndex}")
             if (viewIndex == container.viewIndex) {
+                Log.d("siyu", "setupRemoteVideoEx111: ${it.connection}")
                 rtcEngine.setupRemoteVideoEx(
                     it,
                     it.connection
                 )
                 return
             }
-            it.release()
         }
 
         var videoView = container.container.getChildAt(container.viewIndex)
@@ -92,6 +89,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                     container.renderMode,
                     container.uid
                 )
+                Log.d("siyu", "setupRemoteVideoEx222: $connectionWrap")
                 rtcEngine.setupRemoteVideoEx(
                     remoteVideoCanvasWrap,
                     connectionWrap
@@ -100,6 +98,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             }
         }
 
+        Log.d("siyu", "setupRemoteVideoEx333: $connection")
         val remoteVideoCanvasWrap = RemoteVideoCanvasWrap(
             connection,
             container.lifecycleOwner,
@@ -115,11 +114,11 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
 
     private fun innerSwitchAnchorState(
         newState: AnchorState,
+        anchorUid: Int,
         connection: RtcConnection,
         token: String?,
-        ownerUid: Int?,
-        mediaOptions: ChannelMediaOptions?,
-        context: Context?) {
+        mediaOptions: ChannelMediaOptions?
+    ) {
         Log.d(tag, "innerSwitchAnchorState, newState: $newState, connection: $connection, anchorStateMap: $anchorStateMap")
         // anchorStateMap 无当前主播记录
         if (anchorStateMap.none {it.key.isSameChannel(connection)}) {
@@ -149,15 +148,15 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                     Log.d(tag, "joinChannel JOINED, connection:$connection, ret:$ret")
                 }
                 AnchorState.JOINED_WITHOUT_AUDIO -> {
-                    // 加入频道只收音频流
                     val options = mediaOptions ?: ChannelMediaOptions().apply {
-                        // 加入频道只收音频流
                         clientRoleType = Constants.CLIENT_ROLE_AUDIENCE
                         audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY
                         autoSubscribeVideo = true
-                        autoSubscribeAudio = false
+                        autoSubscribeAudio = true
                     }
                     val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
+                    // 防止音画不同步， 我们采用先订阅再将播放调为0的方式
+                    rtcEngine.adjustUserPlaybackSignalVolumeEx(anchorUid, 0, connection)
                     Log.d(tag, "joinChannel JOINED_WITHOUT_AUDIO, connection:$connection, ret:$ret")
                 }
 
@@ -196,11 +195,8 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             autoSubscribeAudio = true
                         }
                         val ret = rtcEngine.updateChannelMediaOptionsEx(options, connection)
-                        if (ret == -8) {
-                            needSubscribe = true
-                            needSubscribeConnection = connection
-                        }
                         Log.d(tag, "updateChannelMediaOptionsEx, connection:$connection, ret:$ret")
+                        rtcEngine.adjustUserPlaybackSignalVolumeEx(anchorUid, 100, connection)
                     }
                     (oldState == AnchorState.JOINED || oldState == AnchorState.JOINED_WITHOUT_AUDIO)  && newState == AnchorState.PRE_JOINED -> {
                         // 保持在频道内，不收流
@@ -230,10 +226,12 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             clientRoleType = Constants.CLIENT_ROLE_AUDIENCE
                             audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY
                             autoSubscribeVideo = true
-                            autoSubscribeAudio = false
+                            autoSubscribeAudio = true
                         }
                         val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
                         Log.d(tag, "joinChannelEx1, connection:$connection, ret:$ret")
+                        // 防止音画不同步， 我们采用先订阅再将播放调为0的方式
+                        rtcEngine.adjustUserPlaybackSignalVolumeEx(anchorUid, 0, connection)
                     }
                     oldState == AnchorState.PRE_JOINED && newState == AnchorState.JOINED_WITHOUT_AUDIO -> {
                         // 保持在频道内, 收流
@@ -241,14 +239,12 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             clientRoleType = Constants.CLIENT_ROLE_AUDIENCE
                             audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY
                             autoSubscribeVideo = true
-                            autoSubscribeAudio = false
+                            autoSubscribeAudio = true
                         }
                         val ret = rtcEngine.updateChannelMediaOptionsEx(options, connection)
-                        if (ret == -8) {
-                            needSubscribe = true
-                            needSubscribeConnection = connection
-                        }
                         Log.d(tag, "updateChannelMediaOptionsEx, connection:$connection, ret:$ret")
+                        // 防止音画不同步， 我们采用先订阅再将播放调为0的方式
+                        rtcEngine.adjustUserPlaybackSignalVolumeEx(anchorUid, 0, connection)
                     }
                     newState == AnchorState.IDLE -> {
                         // 退出频道
@@ -311,7 +307,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         }
 
         fun release() {
-            Log.d(tag, "RemoteVideoCanvasWrap release: $connection")
+            Log.d("siyu", "RemoteVideoCanvasWrap release: $connection")
             lifecycleOwner.lifecycle.removeObserver(this)
             setupMode = VIEW_SETUP_MODE_REMOVE
             rtcEngine.setupRemoteVideoEx(this, connection)
