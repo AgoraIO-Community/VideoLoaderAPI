@@ -57,9 +57,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             val videoView = it.view
             val viewIndex = container.container.indexOfChild(videoView)
 
-            Log.d("siyu", "setupRemoteVideoEx111: viewIndex$viewIndex, container.viewIndex:${container.viewIndex}")
             if (viewIndex == container.viewIndex) {
-                Log.d("siyu", "setupRemoteVideoEx111: ${it.connection}")
                 rtcEngine.setupRemoteVideoEx(
                     it,
                     it.connection
@@ -89,7 +87,6 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                     container.renderMode,
                     container.uid
                 )
-                Log.d("siyu", "setupRemoteVideoEx222: $connectionWrap")
                 rtcEngine.setupRemoteVideoEx(
                     remoteVideoCanvasWrap,
                     connectionWrap
@@ -98,7 +95,6 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             }
         }
 
-        Log.d("siyu", "setupRemoteVideoEx333: $connection")
         val remoteVideoCanvasWrap = RemoteVideoCanvasWrap(
             connection,
             container.lifecycleOwner,
@@ -307,7 +303,6 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         }
 
         fun release() {
-            Log.d("siyu", "RemoteVideoCanvasWrap release: $connection")
             lifecycleOwner.lifecycle.removeObserver(this)
             setupMode = VIEW_SETUP_MODE_REMOVE
             rtcEngine.setupRemoteVideoEx(this, connection)
