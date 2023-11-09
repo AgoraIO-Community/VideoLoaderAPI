@@ -13,7 +13,7 @@ public class VideoLoaderApiImpl: NSObject {
     public var printClosure: ((String)->())?
     public var warningClosure: ((String)->())?
     public var errorClosure: ((String)->())?
-    private(set) var config: VideoLoaderConfig?
+    private var config: VideoLoaderConfig?
     
     private let apiProxy = VideoLoaderApiProxy()
     private var profilerMap: [String: VideoLoaderProfiler] = [:]
@@ -362,10 +362,19 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
     }
 }
 
-
 extension VideoLoaderApiImpl {
     func startMediaRenderingTracing(anchorId: String) {
         guard let engine = config?.rtcEngine, let connection = exConnectionMap[anchorId] else {return}
         engine.startMediaRenderingTracingEx(connection)
+    }
+    
+    func getUsedAnchorIds(tagId: String) -> [String] {
+        var anchorIds: [String] = []
+        //find anchor id list
+        exConnectionDeps.forEach { key, value in
+            if value[tagId] == nil { return }
+            anchorIds.append(key)
+        }
+        return anchorIds
     }
 }
