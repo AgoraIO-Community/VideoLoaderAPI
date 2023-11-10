@@ -24,9 +24,9 @@ class RoomCollectionViewController: UIViewController {
     var focusIndex: Int = -1
     
     private lazy var delegateHandler: AGCollectionSlicingDelegateHandler = {
-        let needPrejoin = settingInfoList[0].selectedValue() == 0 ? true : false
-        let videoType = AGSlicingType(rawValue: settingInfoList[1].selectedValue()) ?? .visible
-        let audioType = AGSlicingType(rawValue: settingInfoList[2].selectedValue()) ?? .endScroll
+        let needPrejoin = settingInfoList[DebugIndexType.prejoin.rawValue].selectedValue() == 0 ? true : false
+        let videoType = AGSlicingType(rawValue: settingInfoList[DebugIndexType.videoLoadPolicy.rawValue].selectedValue()) ?? .visible
+        let audioType = AGSlicingType(rawValue: settingInfoList[DebugIndexType.audioLoadPolicy.rawValue].selectedValue()) ?? .endScroll
         let handler = AGCollectionSlicingDelegateHandler(localUid: kCurrentUid, needPrejoin: needPrejoin)
         handler.videoSlicingType = videoType
         handler.audioSlicingType = audioType
@@ -87,20 +87,24 @@ class RoomCollectionViewController: UIViewController {
         button1.frame = CGRect(x: 10, y: 80, width: 100, height: 40)
         button1.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
         
-        let button2 = UIButton(type: .custom)
-        button2.setTitle("random pk", for: .normal)
-        button2.setTitleColor(.white, for: .normal)
-        view.addSubview(button2)
-        button2.backgroundColor = .blue
-        button2.frame = CGRect(x: 10, y: 130, width: 100, height: 40)
-        button2.addTarget(self, action: #selector(randomPKAction), for: .touchUpInside)
+        var buttonBottom: CGFloat = 130
+        if settingInfoList[DebugIndexType.pkEnable.rawValue].selectedValue() == 1 {
+            let button2 = UIButton(type: .custom)
+            button2.setTitle("random pk", for: .normal)
+            button2.setTitleColor(.white, for: .normal)
+            view.addSubview(button2)
+            button2.backgroundColor = .blue
+            button2.frame = CGRect(x: 10, y: buttonBottom, width: 100, height: 40)
+            button2.addTarget(self, action: #selector(randomPKAction), for: .touchUpInside)
+            buttonBottom = 180
+        }
         
         let button3 = UIButton(type: .custom)
         button3.setTitle("load more", for: .normal)
         button3.setTitleColor(.white, for: .normal)
         view.addSubview(button3)
         button3.backgroundColor = .blue
-        button3.frame = CGRect(x: 10, y: 180, width: 100, height: 40)
+        button3.frame = CGRect(x: 10, y: buttonBottom, width: 100, height: 40)
         button3.addTarget(self, action: #selector(loadMoreAction), for: .touchUpInside)
         
         view.addSubview(label)

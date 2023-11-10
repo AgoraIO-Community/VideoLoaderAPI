@@ -103,6 +103,7 @@ class RoomCollectionListViewController: UIViewController {
     }
     
     private func updateRoomPkList(roomInfo: RoomListModel) {
+        guard settingInfoList[DebugIndexType.pkEnable.rawValue].selectedValue() == 1 else { return }
         let ownerAnchorInfo = roomInfo.anchorInfoList.first!
         roomInfo.anchorInfoList = [ownerAnchorInfo]
         let pkChannelIdx = Int(arc4random_uniform(UInt32(roomList.count + 4)))
