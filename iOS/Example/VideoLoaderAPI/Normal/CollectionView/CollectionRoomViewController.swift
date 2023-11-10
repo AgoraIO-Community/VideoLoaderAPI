@@ -11,8 +11,9 @@ import VideoLoaderAPI
 
 class RoomCollectionViewController: UIViewController {
     var randomPKClosure: ((RoomListModel)->())?
+    var loadMoreClosure: (()->([RoomListModel]))?
     var origRoomList: [RoomListModel]?
-    var roomList: [RoomListModel]? {
+    var roomList: [RoomListModel] = [] {
         didSet {
             if origRoomList == nil {
                 origRoomList = roomList
@@ -31,7 +32,7 @@ class RoomCollectionViewController: UIViewController {
         handler.audioSlicingType = audioType
         handler.onRequireRenderVideo = { [weak self] (info, cell, indexPath) in
             guard let cell = cell as? TestRoomCollectionViewCell else {return nil }
-            let roomInfo = self?.roomList?[indexPath.row]
+            let roomInfo = self?.roomList[indexPath.row]
             if info.channelName != roomInfo?.channelName() {
                 return cell.otherBroadcasterView
             }
@@ -91,8 +92,16 @@ class RoomCollectionViewController: UIViewController {
         button2.setTitleColor(.white, for: .normal)
         view.addSubview(button2)
         button2.backgroundColor = .blue
-        button2.frame = CGRect(x: 120, y: 80, width: 100, height: 40)
+        button2.frame = CGRect(x: 10, y: 130, width: 100, height: 40)
         button2.addTarget(self, action: #selector(randomPKAction), for: .touchUpInside)
+        
+        let button3 = UIButton(type: .custom)
+        button3.setTitle("load more", for: .normal)
+        button3.setTitleColor(.white, for: .normal)
+        view.addSubview(button3)
+        button3.backgroundColor = .blue
+        button3.frame = CGRect(x: 10, y: 180, width: 100, height: 40)
+        button3.addTarget(self, action: #selector(loadMoreAction), for: .touchUpInside)
         
         view.addSubview(label)
     }
@@ -109,8 +118,8 @@ class RoomCollectionViewController: UIViewController {
     
     @objc func randomPKAction() {
         guard let indexPath = listView.indexPathsForVisibleItems.first,
-                  let cell = listView.cellForItem(at: indexPath) as? TestRoomCollectionViewCell,
-                  let room = roomList?[indexPath.row] else {return}
+                  let cell = listView.cellForItem(at: indexPath) as? TestRoomCollectionViewCell else {return}
+        let room = roomList[indexPath.row]
         randomPKClosure?(room)
         let list = self.roomList
         self.roomList = list
@@ -118,25 +127,37 @@ class RoomCollectionViewController: UIViewController {
         cell.broadcasterCount = room.anchorInfoList.count
         print("randomPKAction[\(room.channelName())] pk channelName: \(room.anchorInfoList.count > 1 ? room.anchorInfoList.last!.channelName : "none")")
     }
+    
+    @objc func loadMoreAction() {
+        guard let moreList = self.loadMoreClosure?(), moreList.count > 0 else {return}
+        var indexPaths: [IndexPath] = []
+        let start = self.roomList.count
+        let end = start + moreList.count - 1
+        for i in start...end {
+            indexPaths.append(IndexPath(row: i, section: 0))
+        }
+        self.roomList = self.roomList + moreList
+        self.listView.insertItems(at: indexPaths)
+    }
 }
 
 extension RoomCollectionViewController: UICollectionViewDataSource {
     open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kUIListViewCellIdentifier, for: indexPath) as! TestRoomCollectionViewCell
-        let room = self.roomList![indexPath.row]
+        let room = self.roomList[indexPath.row]
         cell.titleLabel.text = "roomId:\(room.channelName())\n index:\(indexPath.row)"
         cell.broadcasterCount = room.anchorInfoList.count
         return cell
     }
     
     open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return roomList!.count
+        return roomList.count
     }
 }
 
 extension RoomCollectionViewController: IVideoLoaderApiListener {
     func onFirstFrameRecv(channelName: String, uid: UInt, elapsed: Int64) {
-        guard let room = roomList?.first(where: { $0.channelName() == channelName}),
+        guard let room = roomList.first(where: { $0.channelName() == channelName}),
                 room.userId() == "\(uid)" else {
             return
         }

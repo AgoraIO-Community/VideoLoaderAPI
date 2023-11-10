@@ -17,9 +17,9 @@ private let robotStreamURL = [
     "https://download.agora.io/demo/release/agora_show_video_1.mp4",
     "https://download.agora.io/demo/release/agora_show_video_2.mp4",
     "https://download.agora.io/demo/release/agora_show_video_3.mp4",
-    "https://download.agora.io/demo/release/agora_show_video_4.mp4",
-    "https://download.agora.io/demo/release/agora_show_video_5.mp4",
-    "https://download.agora.io/demo/release/agora_show_video_6.mp4"
+    "https://download.agora.io/demo/release/agora_test_video_20_music.mp4",
+    "https://download.agora.io/demo/release/agora_test_video_21_music.mp4",
+    "https://download.agora.io/demo/release/agora_test_video_22_music.mp4"
 ]
 private let robotRoomIds = ["1", "2", "3"]
 private let robotRoomOwnerHeaders = [
