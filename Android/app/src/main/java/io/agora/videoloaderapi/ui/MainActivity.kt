@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import io.agora.videoloaderapi.AGSlicingType
 import io.agora.videoloaderapi.AgoraApplication
+import io.agora.videoloaderapi.R
 import io.agora.videoloaderapi.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         // 选择视频出图模式
         when (AgoraApplication.the()?.sliceMode) {
-            AGSlicingType.VISIABLE -> {
+            AGSlicingType.VISIBLE -> {
                 mViewBinding.spSliceMode.setSelection(0)
             }
             AGSlicingType.END_SCROLL -> {
@@ -53,9 +54,11 @@ class MainActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 when (p2) {
                     0 -> {
-                        AgoraApplication.the()?.sliceMode = AGSlicingType.VISIABLE
+                        mViewBinding.tvSliceModeShow.setText(R.string.show_slicing_type_visible)
+                        AgoraApplication.the()?.sliceMode = AGSlicingType.VISIBLE
                     }
                     1 -> {
+                        mViewBinding.tvSliceModeShow.setText(R.string.show_slicing_type_end)
                         AgoraApplication.the()?.sliceMode = AGSlicingType.END_SCROLL
                     }
                 }

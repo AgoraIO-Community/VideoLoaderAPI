@@ -128,7 +128,16 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                         autoSubscribeVideo = false
                         autoSubscribeAudio = false
                     }
-                    val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
+                    val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {
+                        override fun onVideoRenderingTracingResult(
+                            uid: Int,
+                            currentEvent: Constants.MEDIA_TRACE_EVENT?,
+                            tracingInfo: VideoRenderingTracingInfo?
+                        ) {
+                            super.onVideoRenderingTracingResult(uid, currentEvent, tracingInfo)
+                            Log.d(tag, "onVideoRenderingTracingResult channel: ${connection.channelId} uid: $uid, currentEvent: $currentEvent, tracingInfo: $tracingInfo")
+                        }
+                    })
                     Log.d(tag, "joinChannel PRE_JOINED, connection:$connection, ret:$ret")
                 }
                 AnchorState.JOINED -> {
@@ -140,7 +149,16 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                         autoSubscribeVideo = true
                         autoSubscribeAudio = true
                     }
-                    val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
+                    val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {
+                        override fun onVideoRenderingTracingResult(
+                            uid: Int,
+                            currentEvent: Constants.MEDIA_TRACE_EVENT?,
+                            tracingInfo: VideoRenderingTracingInfo?
+                        ) {
+                            super.onVideoRenderingTracingResult(uid, currentEvent, tracingInfo)
+                            Log.d(tag, "onVideoRenderingTracingResult channel: ${connection.channelId} uid: $uid, currentEvent: $currentEvent, tracingInfo: $tracingInfo")
+                        }
+                    })
                     Log.d(tag, "joinChannel JOINED, connection:$connection, ret:$ret")
                 }
                 AnchorState.JOINED_WITHOUT_AUDIO -> {
@@ -150,7 +168,16 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                         autoSubscribeVideo = true
                         autoSubscribeAudio = true
                     }
-                    val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
+                    val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {
+                        override fun onVideoRenderingTracingResult(
+                            uid: Int,
+                            currentEvent: Constants.MEDIA_TRACE_EVENT?,
+                            tracingInfo: VideoRenderingTracingInfo?
+                        ) {
+                            super.onVideoRenderingTracingResult(uid, currentEvent, tracingInfo)
+                            Log.d(tag, "onVideoRenderingTracingResult channel: ${connection.channelId} uid: $uid, currentEvent: $currentEvent, tracingInfo: $tracingInfo")
+                        }
+                    })
                     // 防止音画不同步， 我们采用先订阅再将播放调为0的方式
                     rtcEngine.adjustUserPlaybackSignalVolumeEx(anchorUid, 0, connection)
                     Log.d(tag, "joinChannel JOINED_WITHOUT_AUDIO, connection:$connection, ret:$ret")
@@ -179,7 +206,16 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             autoSubscribeVideo = false
                             autoSubscribeAudio = false
                         }
-                        val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
+                        val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {
+                            override fun onVideoRenderingTracingResult(
+                                uid: Int,
+                                currentEvent: Constants.MEDIA_TRACE_EVENT?,
+                                tracingInfo: VideoRenderingTracingInfo?
+                            ) {
+                                super.onVideoRenderingTracingResult(uid, currentEvent, tracingInfo)
+                                Log.d(tag, "onVideoRenderingTracingResult channel: ${connection.channelId} uid: $uid, currentEvent: $currentEvent, tracingInfo: $tracingInfo")
+                            }
+                        })
                         Log.d(tag, "joinChannel PRE_JOINED, connection:$connection, ret:$ret")
                     }
                     (oldState == AnchorState.PRE_JOINED || oldState == AnchorState.JOINED_WITHOUT_AUDIO) && newState == AnchorState.JOINED -> {
@@ -213,7 +249,16 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             autoSubscribeVideo = true
                             autoSubscribeAudio = true
                         }
-                        val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
+                        val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {
+                            override fun onVideoRenderingTracingResult(
+                                uid: Int,
+                                currentEvent: Constants.MEDIA_TRACE_EVENT?,
+                                tracingInfo: VideoRenderingTracingInfo?
+                            ) {
+                                super.onVideoRenderingTracingResult(uid, currentEvent, tracingInfo)
+                                Log.d(tag, "onVideoRenderingTracingResult channel: ${connection.channelId} uid: $uid, currentEvent: $currentEvent, tracingInfo: $tracingInfo")
+                            }
+                        })
                         Log.d(tag, "joinChannelEx1, connection:$connection, ret:$ret")
                     }
                     oldState == AnchorState.IDLE && newState == AnchorState.JOINED_WITHOUT_AUDIO -> {
@@ -224,7 +269,16 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             autoSubscribeVideo = true
                             autoSubscribeAudio = true
                         }
-                        val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {})
+                        val ret = rtcEngine.joinChannelEx(token, connection, options, object : IRtcEngineEventHandler() {
+                            override fun onVideoRenderingTracingResult(
+                                uid: Int,
+                                currentEvent: Constants.MEDIA_TRACE_EVENT?,
+                                tracingInfo: VideoRenderingTracingInfo?
+                            ) {
+                                super.onVideoRenderingTracingResult(uid, currentEvent, tracingInfo)
+                                Log.d(tag, "onVideoRenderingTracingResult channel: ${connection.channelId}, uid: $uid, currentEvent: $currentEvent, tracingInfo: $tracingInfo")
+                            }
+                        })
                         Log.d(tag, "joinChannelEx1, connection:$connection, ret:$ret")
                         // 防止音画不同步， 我们采用先订阅再将播放调为0的方式
                         rtcEngine.adjustUserPlaybackSignalVolumeEx(anchorUid, 0, connection)

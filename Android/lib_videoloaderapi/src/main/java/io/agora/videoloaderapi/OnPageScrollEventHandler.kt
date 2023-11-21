@@ -11,12 +11,12 @@ import kotlin.collections.ArrayList
 
 /**
  * 直播间出图模式
- * @param VISIABLE 立即出图
+ * @param VISIBLE 立即出图
  * @param END_DRAG 松手出图
  * @param END_SCROLL 停下出图
  */
 enum class AGSlicingType(val value :Int) {
-    VISIABLE(0),  //立即出图
+    VISIBLE(0),  //立即出图
     END_DRAG(1),  //松手出图
     END_SCROLL(2),  //停下出图
     NEVER(3)
@@ -215,7 +215,7 @@ abstract class OnPageScrollEventHandler constructor(
 
         roomInfo.anchorList.forEach { anchorInfo ->
             videoSwitcher.switchAnchorState(AnchorState.JOINED_WITHOUT_AUDIO, anchorInfo, uid)
-            if (videoScrollMode == AGSlicingType.VISIABLE || isCurrentItem) {
+            if (videoScrollMode == AGSlicingType.VISIBLE || isCurrentItem) {
                 onRequireRenderVideo(position, anchorInfo)?.let {
                     videoSwitcher.renderVideo(
                         anchorInfo,
