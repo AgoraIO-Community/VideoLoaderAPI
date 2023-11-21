@@ -12,7 +12,7 @@ class AgoraApplication : Application() {
     }
 
     var needPreJoin: Boolean = false
-    var sliceMode: AGSlicingType = AGSlicingType.VISIABLE
+    var sliceMode: AGSlicingType = AGSlicingType.VISIBLE
 
     override fun onCreate() {
         super.onCreate()
