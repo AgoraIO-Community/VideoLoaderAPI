@@ -2,10 +2,10 @@ package io.agora.videoloaderapi
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.SparseArray
 import androidx.viewpager2.widget.ViewPager2
 import io.agora.rtc2.*
+import io.agora.rtc2.internal.Logging
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -111,7 +111,7 @@ abstract class OnPageScrollEventHandler constructor(
     // ViewPager2
     override fun onPageScrollStateChanged(state: Int) {
         super.onPageScrollStateChanged(state)
-        Log.d(tag, "PageChange onPageScrollStateChanged state=$state")
+        //Log.d(tag, "PageChange onPageScrollStateChanged state=$state")
         when (state) {
             ViewPager2.SCROLL_STATE_IDLE -> {
                 if(preLoadPosition != POSITION_NONE){
@@ -143,7 +143,7 @@ abstract class OnPageScrollEventHandler constructor(
         positionOffsetPixels: Int
     ) {
         super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-        Log.d(tag, "PageChange onPageScrolled positionOffset=$positionOffset")
+        //Log.d(tag, "PageChange onPageScrolled positionOffset=$positionOffset")
         if (scrollStatus == ViewPager2.SCROLL_STATE_DRAGGING) {
             if (lastOffset > 0f) {
                 val isMoveUp = (positionOffset - lastOffset) > 0
@@ -165,7 +165,7 @@ abstract class OnPageScrollEventHandler constructor(
 
     override fun onPageSelected(position: Int) {
         super.onPageSelected(position)
-        Log.d(tag, "PageChange onPageSelected position=$position, currLoadPosition=$currLoadPosition, preLoadPosition=$preLoadPosition")
+        //Log.d(tag, "PageChange onPageSelected position=$position, currLoadPosition=$currLoadPosition, preLoadPosition=$preLoadPosition")
 
         if (currLoadPosition != POSITION_NONE) {
             if (preLoadPosition != POSITION_NONE) {
@@ -211,7 +211,7 @@ abstract class OnPageScrollEventHandler constructor(
 
     // ------------------------ inner ---------------------------
     private fun joinChannel(position: Int, roomInfo: VideoLoader.RoomInfo, uid: Int, isCurrentItem: Boolean) {
-        Log.d(tag, "joinChannel roomInfo=$roomInfo")
+        Logging.d(tag, "joinChannel roomInfo=$roomInfo")
 
         roomInfo.anchorList.forEach { anchorInfo ->
             videoSwitcher.switchAnchorState(AnchorState.JOINED_WITHOUT_AUDIO, anchorInfo, uid)
@@ -231,7 +231,7 @@ abstract class OnPageScrollEventHandler constructor(
     }
 
     private fun hideChannel(roomInfo: VideoLoader.RoomInfo) {
-        Log.d(tag, "switchRoomState, hideChannel: $roomInfo")
+        Logging.d(tag, "switchRoomState, hideChannel: $roomInfo")
         roomsJoined.removeIf { it.roomId == roomInfo.roomId }
         val currentRoom = roomsJoined.firstOrNull() ?: return
         roomInfo.anchorList.forEach {
@@ -252,8 +252,8 @@ abstract class OnPageScrollEventHandler constructor(
         val currentRoom = roomsJoined.firstOrNull() ?: return
         val index =
             roomsForPreloading.indexOfFirst { it.roomId == currentRoom.roomId }
-        Log.d(tag, "switchRoomState, index: $index, connectionsJoined:$roomsJoined")
-        Log.d(tag, "switchRoomState, roomsForPreloading: $roomsForPreloading")
+        Logging.d(tag, "switchRoomState, index: $index, connectionsJoined:$roomsJoined")
+        Logging.d(tag, "switchRoomState, roomsForPreloading: $roomsForPreloading")
 
         // joined房间的上下两个房间
         val connPreLoaded = mutableListOf<VideoLoader.RoomInfo>()
@@ -274,7 +274,7 @@ abstract class OnPageScrollEventHandler constructor(
                 continue
             }
             if (videoSwitcher.getRoomState(conn.roomId, localUid) != AnchorState.PRE_JOINED) {
-                Log.d(tag, "switchRoomState, getRoomState: $roomsForPreloading")
+                Logging.d(tag, "switchRoomState, getRoomState: $roomsForPreloading")
                 videoSwitcher.preloadAnchor(conn.anchorList, localUid)
                 conn.anchorList.forEach {
                     if (needPreJoin && currentRoom.anchorList.none { joined -> joined.channelId == it.channelId }) {
@@ -285,18 +285,18 @@ abstract class OnPageScrollEventHandler constructor(
             connPreLoaded.add(conn)
         }
 
-        Log.d(tag, "switchRoomState, connPreLoaded: $connPreLoaded ")
+        Logging.d(tag, "switchRoomState, connPreLoaded: $connPreLoaded ")
         // 非preJoin房间需要退出频道
         roomsForPreloading.forEach { room ->
             if (needPreJoin && videoSwitcher.getRoomState(room.roomId, localUid) == AnchorState.PRE_JOINED && connPreLoaded.none {room.roomId == it.roomId}) {
-                Log.d(tag, "switchRoomState, remove: $room ")
+                Logging.d(tag, "switchRoomState, remove: $room ")
                 room.anchorList.forEach {
                     if (currentRoom.anchorList.none { joined -> joined.channelId == it.channelId }) {
                         videoSwitcher.switchAnchorState(AnchorState.IDLE, it, localUid)
                     }
                 }
             } else if (!needPreJoin && videoSwitcher.getRoomState(room.roomId, localUid) != AnchorState.IDLE && roomsJoined.none {room.roomId == it.roomId}) {
-                Log.d(tag, "switchRoomState, remove: $room ")
+                Logging.d(tag, "switchRoomState, remove: $room ")
                 room.anchorList.forEach {
                     if (currentRoom.anchorList.none { joined -> joined.channelId == it.channelId }) {
                         videoSwitcher.switchAnchorState(AnchorState.IDLE, it, localUid)
