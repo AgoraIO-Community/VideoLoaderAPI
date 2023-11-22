@@ -1,4 +1,11 @@
 
+## [0.1.3](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.3)
+- [iOS]修复重置roomList后当前房间因为pk对象变化导致的无法移除多余的频道
+- [iOS]Demo支持房间内更新pk对象
+- [Android] 修复滑动过程中可能出现的停止渲染问题
+- [Android] 修复滑动过程中可能出现的音频停止播放问题
+- [Android] 优化demo逻辑, 支持体验更多房间
+
 ## [0.1.2](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.2)
 - [Android]修复EglRender - Not valid surface问题
 

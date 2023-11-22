@@ -7,6 +7,12 @@
 
 import UIKit
 
+enum DebugIndexType: Int {
+    case prejoin = 0
+    case videoLoadPolicy = 1
+    case audioLoadPolicy = 2
+    case pkEnable = 3
+}
 
 struct DebugSettingInfo {
     var title: String = ""
@@ -25,7 +31,7 @@ struct DebugSettingInfo {
 private let kCellWithIdentifier = "DebugSettingCellIdentifier"
 
 let settingInfoList: [DebugSettingInfo] = [
-    DebugSettingInfo(title: "需要秒切加速", 
+    DebugSettingInfo(title: "需要秒切加速",
                      details: ["是", "否"],
                      defaultSelectedIdxs: [0, 1]),
     DebugSettingInfo(title: "视频出图时机",
@@ -33,7 +39,10 @@ let settingInfoList: [DebugSettingInfo] = [
                      defaultSelectedIdxs: [0, 1, 2]),
     DebugSettingInfo(title: "音频出图时机",
                      details: ["直接出声", "滑动放手时", "滑动停止时", "永不"],
-                     defaultSelectedIdxs: [0, 1, 2, 100])
+                     defaultSelectedIdxs: [0, 1, 2, 100]),
+    DebugSettingInfo(title: "需要展示PK(需要重启)",
+                     details: ["否", "是"],
+                     defaultSelectedIdxs: [0, 1])
 ]
 
 class DebugSettingViewController: UITableViewController {
