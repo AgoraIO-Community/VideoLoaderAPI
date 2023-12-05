@@ -32,7 +32,7 @@ data class ShowRoomDetailModel constructor(
     val ownerId: String,
     val ownerAvatar: String,// http url
     val ownerName: String,
-    val roomStatus: Int = ShowRoomStatus.activity.value,
+    var roomStatus: Int = ShowRoomStatus.end.value,
     val interactStatus: Int = ShowInteractionStatus.idle.value,
     val interactRoomName: String,
     val createdAt: Double,

@@ -116,7 +116,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         token: String?,
         mediaOptions: ChannelMediaOptions?
     ) {
-        Logging.d(tag, "innerSwitchAnchorState, newState: $newState, connection: $connection, anchorStateMap: $anchorStateMap")
+        Log.d(tag, "innerSwitchAnchorState, newState: $newState, connection: $connection, anchorStateMap: $anchorStateMap")
         // anchorStateMap 无当前主播记录
         if (anchorStateMap.none {it.key.isSameChannel(connection)}) {
             val rtcConnectionWrap = RtcConnectionWrap(connection)
@@ -361,6 +361,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             lifecycleOwner.lifecycle.removeObserver(this)
             setupMode = VIEW_SETUP_MODE_REMOVE
             rtcEngine.setupRemoteVideoEx(this, connection)
+            Log.d("hugo", "release view")
             remoteVideoCanvasList.remove(this)
         }
     }

@@ -187,7 +187,7 @@ class RoomListActivity : AppCompatActivity() {
 
     private fun goLiveDetailActivity(list: List<ShowRoomDetailModel>, position: Int, roomInfo: ShowRoomDetailModel) {
         // 进房前设置一些必要的设置
-        LiveDetailActivity.launch(
+        LiveRecycleViewActivity.launch(
             this,
             ArrayList(list),
             position,
