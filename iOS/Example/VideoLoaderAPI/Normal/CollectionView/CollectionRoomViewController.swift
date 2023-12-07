@@ -25,8 +25,8 @@ class RoomCollectionViewController: UIViewController {
     
     private lazy var delegateHandler: AGCollectionSlicingDelegateHandler = {
         let needPrejoin = settingInfoList[DebugIndexType.prejoin.rawValue].selectedValue() == 0 ? true : false
-        let videoType = AGSlicingType(rawValue: settingInfoList[DebugIndexType.videoLoadPolicy.rawValue].selectedValue()) ?? .visible
-        let audioType = AGSlicingType(rawValue: settingInfoList[DebugIndexType.audioLoadPolicy.rawValue].selectedValue()) ?? .endScroll
+        let videoType = AGVideoSlicingType(rawValue: settingInfoList[DebugIndexType.videoLoadPolicy.rawValue].selectedValue()) ?? .visible
+        let audioType = AGAudioSlicingType(rawValue: settingInfoList[DebugIndexType.audioLoadPolicy.rawValue].selectedValue()) ?? .endScroll
         let handler = AGCollectionSlicingDelegateHandler(localUid: kCurrentUid, needPrejoin: needPrejoin)
         handler.videoSlicingType = videoType
         handler.audioSlicingType = audioType
@@ -166,7 +166,13 @@ extension RoomCollectionViewController: IVideoLoaderApiListener {
             return
         }
         label.frame.size = CGSize(width: view.bounds.width, height: 0)
-        label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] show cost: \(elapsed) ms"
+        label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] rtc cost: \(elapsed)ms"
+        #if DEBUG
+        if let date = delegateHandler.cellVisibleDate[room.channelName()] {
+            
+            label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] rtc cost: \(elapsed)ms display: \(Int64(-date.timeIntervalSinceNow * 1000))ms"
+        }
+        #endif
         label.sizeToFit()
         label.frame = CGRect(origin: CGPoint(x: 10, y: 40), size: label.frame.size)
     }

@@ -8,22 +8,29 @@
 import Foundation
 
 //触发时机
-@objc public enum AGSlicingType: Int {
+@objc public enum AGVideoSlicingType: Int {
     case visible = 0   //显示时
     case endDrag       //放手时
     case endScroll     //滑动停止时
-    case never = 100   //不展示(只对声音有效)
+}
+
+@objc public enum AGAudioSlicingType: Int {
+    case endScroll     //滑动停止时
+    case never = 100   //不展示
 }
 
 //秒切CollectionView delegate handler
 @objcMembers
 open class AGCollectionSlicingDelegateHandler: AGBaseDelegateHandler {
-    public var videoSlicingType: AGSlicingType = .visible      //视频出图时机
-    public var audioSlicingType: AGSlicingType = .endScroll    //声音出图时机
+    public var videoSlicingType: AGVideoSlicingType = .visible      //视频展示时机
+    public var audioSlicingType: AGAudioSlicingType = .endScroll    //声音展示时机
     public var onRequireRenderVideo:((AnchorInfo, UICollectionViewCell, IndexPath)->UIView?)? = nil
     private var needPrejoin: Bool = true    //是否需要秒切加速(上下未显示但是已经初始化的页面是否走默认join的策略)
     private var prejoinCount: Int = 1
     private var needReloadData: Bool = false
+    #if DEBUG
+    public private(set) var cellVisibleDate: [String: Date] = [:]
+    #endif
     
     required public convenience init(localUid: UInt, needPrejoin: Bool) {
         self.init(localUid: localUid)
@@ -237,8 +244,6 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
         if videoSlicingType == .visible || needReloadData {
             var state: AnchorState = .joinedWithVideo
             if audioSlicingType == .never {
-            } else if audioSlicingType == .visible {
-                state = .joinedWithAudioVideo
             } else if needReloadData {
                 state = .joinedWithAudioVideo
             }
@@ -252,6 +257,10 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
         }
         needReloadData = false
         self.scrollView = collectionView
+        
+        #if DEBUG
+        cellVisibleDate[room.channelName()] = Date()
+        #endif
     }
     
     open func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -272,7 +281,7 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
     
     open func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard videoSlicingType == .endDrag, let collectionView = scrollView as? UICollectionView else {return}
-        let state: AnchorState = audioSlicingType == .endScroll ? .joinedWithVideo : .joinedWithAudioVideo
+        let state: AnchorState = .joinedWithVideo
         let room = showVisibleRoom(collectionView: collectionView, state: state).first
         
         if let room = room {
