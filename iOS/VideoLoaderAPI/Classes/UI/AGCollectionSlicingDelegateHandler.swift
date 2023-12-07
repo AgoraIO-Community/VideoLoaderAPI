@@ -57,7 +57,7 @@ open class AGCollectionSlicingDelegateHandler: AGBaseDelegateHandler {
                 if newValue.isDragging == false, newValue.isDecelerating == false {
                     //更新roomlist时，已经完全停止则重新走停止后更新当前状态和上下预加载屏幕的状态
                     let state: AnchorState = audioSlicingType == .never ? .joinedWithVideo : .joinedWithAudioVideo
-                    visibleRoomInfos = showVisibleRoom(collectionView: newValue, state: state)
+                    visibleRoomInfos = showVisibleRoom(collectionView: newValue, state: state, prejoinEnable: true)
                 } else {
                     //没有停止的时候都改成joinedWithVideo，⚠️会存在当前房间画面无声音，滑动停止的时候才能听到
                     visibleRoomInfos = joinVideo()
@@ -149,7 +149,7 @@ extension AGCollectionSlicingDelegateHandler {
         return (nil, nil)
     }
     
-    fileprivate func showVisibleRoom(collectionView: UICollectionView?, state: AnchorState) -> [IVideoLoaderRoomInfo] {
+    fileprivate func showVisibleRoom(collectionView: UICollectionView?, state: AnchorState, prejoinEnable: Bool) -> [IVideoLoaderRoomInfo] {
         debugLoaderPrint("showVisibleRoom start ===== \(collectionView?.visibleCells.count ?? 0)")
         var visibleRoomInfos: [IVideoLoaderRoomInfo] = []
         guard let collectionView = collectionView else {return visibleRoomInfos}
@@ -162,7 +162,9 @@ extension AGCollectionSlicingDelegateHandler {
                             state: state,
                             cell: cell,
                             indexPath: indexPath)
-                prejoin(focusIndex: indexPath.row)
+                if prejoinEnable {
+                    prejoin(focusIndex: indexPath.row)
+                }
                 visibleRoomInfos.append(room)
             }
         }
@@ -177,7 +179,7 @@ extension AGCollectionSlicingDelegateHandler {
                                              localUid: localUid,
                                              anchorInfo: anchorInfo,
                                              tagId: room.channelName())
-            var renderView = self.onRequireRenderVideo?(anchorInfo, cell, indexPath)
+            let renderView = self.onRequireRenderVideo?(anchorInfo, cell, indexPath)
             let container = VideoCanvasContainer()
             container.uid = anchorInfo.uid
             container.container = renderView
@@ -282,7 +284,7 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
     open func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard videoSlicingType == .endDrag, let collectionView = scrollView as? UICollectionView else {return}
         let state: AnchorState = .joinedWithVideo
-        let room = showVisibleRoom(collectionView: collectionView, state: state).first
+        let room = showVisibleRoom(collectionView: collectionView, state: state, prejoinEnable: false).first
         
         if let room = room {
             //上报开始计算秒切出图
@@ -295,7 +297,7 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
         cleanIdleRoom(collectionView: collectionView)
         //停止之后永远是把可视的变成
         let state: AnchorState = audioSlicingType == .never ? .joinedWithVideo : .joinedWithAudioVideo
-        let room = showVisibleRoom(collectionView: collectionView, state: state).first
+        let room = showVisibleRoom(collectionView: collectionView, state: state, prejoinEnable: true).first
         
         if videoSlicingType == .endScroll, let room = room {
             //上报开始计算秒切出图

@@ -246,7 +246,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
             mediaOptions.autoSubscribeVideo = false
         }
 
-        debugLoaderPrint("tagId[\(tagId)] switchAnchorState[\(anchorInfo.channelName)] want:\(newState.rawValue) real: \(realState.rawValue)")
+        debugLoaderPrint("tagId[\(tagId)] switchAnchorState[\(anchorInfo.channelName)] want:\(newState.rawValue) real:\(realState.rawValue) old:\(oldState.rawValue)")
 //        debugLoaderPrint("tagId[\(tagId)] switchAnchorState[\(anchorInfo.channelName)] autoSubscribeAudio:\(mediaOptions.autoSubscribeAudio) autoSubscribeVideo: \(mediaOptions.autoSubscribeVideo)")
         _updateChannelEx(channelId:anchorInfo.channelName, options: mediaOptions)
         
