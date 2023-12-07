@@ -39,10 +39,8 @@ abstract class OnPageScrollEventHandler2 constructor(
     // ViewPager2.OnPageChangeCallback()
     private val POSITION_NONE = -1
     private var currLoadPosition = POSITION_NONE
-    private val PRE_LOAD_OFFSET = 0.01f
     private var preLoadPosition = POSITION_NONE
-    private var lastOffset = 0
-    private var scrollStatus: Int = RecyclerView.SCROLL_STATE_IDLE
+    private var lastVisibleItemCount = 0
 
     private val roomsForPreloading = Collections.synchronizedList(mutableListOf<VideoLoader.RoomInfo>())
     private val roomsJoined = Collections.synchronizedList(mutableListOf<VideoLoader.RoomInfo>())
@@ -51,11 +49,10 @@ abstract class OnPageScrollEventHandler2 constructor(
 
     private var isFirst = true
 
-    fun onRoomCreated(position: Int, info: VideoLoader.RoomInfo, isCurrentItem: Boolean) {
+    fun onRoomCreated(position: Int, info: VideoLoader.RoomInfo) {
         roomList.put(position, info)
         if (isFirst) {
             isFirst = false
-            //joinChannel(position, info, localUid, true)
             info.anchorList.forEach {
                 mRtcEngine.adjustUserPlaybackSignalVolumeEx(it.anchorUid, 100, RtcConnection(it.channelId, localUid))
             }
@@ -64,11 +61,9 @@ abstract class OnPageScrollEventHandler2 constructor(
                 pageLoaded(position, info)
                 preJoinChannels()
                 preLoadPosition = POSITION_NONE
-                lastFirstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+                currLoadPosition = layoutManager.findFirstVisibleItemPosition()
                 lastVisibleItemCount = layoutManager.childCount
             }, 200)
-            //onPageStartLoading(position)
-            preLoadPosition = POSITION_NONE
         }
     }
 
@@ -107,9 +102,6 @@ abstract class OnPageScrollEventHandler2 constructor(
         return currLoadPosition
     }
 
-    private var lastFirstVisiblePosition = -1
-    private var lastVisibleItemCount = 0
-
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
 
@@ -118,23 +110,23 @@ abstract class OnPageScrollEventHandler2 constructor(
             val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
             val visibleItemCount = layoutManager.childCount
 
-            // 当前停留的页面
-            if (lastFirstVisiblePosition != firstVisibleItemPosition) {
-                startAudio(roomList[firstVisibleItemPosition] ?: return)
-                roomsJoined.add(roomList[firstVisibleItemPosition] ?: return)
-                preJoinChannels()
-                pageLoaded(firstVisibleItemPosition, roomList[firstVisibleItemPosition])
-            }
-
             // 检查哪些item离开了视图
-            for (i in lastFirstVisiblePosition until lastFirstVisiblePosition + lastVisibleItemCount) {
+            for (i in currLoadPosition until currLoadPosition + lastVisibleItemCount) {
                 if (i < firstVisibleItemPosition || i >= firstVisibleItemPosition + visibleItemCount) {
                     hideChannel(roomList[i] ?: return)
                     onPageLeft(i)
                 }
             }
 
-            lastFirstVisiblePosition = firstVisibleItemPosition
+            // 当前停留的页面
+            if (currLoadPosition != firstVisibleItemPosition) {
+                startAudio(roomList[firstVisibleItemPosition] ?: return)
+                roomsJoined.add(roomList[firstVisibleItemPosition] ?: return)
+                preJoinChannels()
+                pageLoaded(firstVisibleItemPosition, roomList[firstVisibleItemPosition])
+            }
+
+            currLoadPosition = firstVisibleItemPosition
             lastVisibleItemCount = visibleItemCount
             preLoadPosition = POSITION_NONE
         }
@@ -147,14 +139,20 @@ abstract class OnPageScrollEventHandler2 constructor(
         // 检查新的页面是否开始出现
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
         val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-        //Log.d("hugo", "onScrolled, firstVisibleItemPosition: $firstVisibleItemPosition, lastVisibleItemPosition: $lastVisibleItemPosition")
+        //Log.d("hugo", "onScrolled, currLoadPosition：currLoadPosition firstVisibleItemPosition: $firstVisibleItemPosition, lastVisibleItemPosition: $lastVisibleItemPosition")
         // 和上次第一个可见的item不同，认为是新的页面开始加载
-        if ((firstVisibleItemPosition != lastFirstVisiblePosition || lastVisibleItemPosition != lastFirstVisiblePosition) && preLoadPosition == POSITION_NONE) { // && lastFirstVisiblePosition != POSITION_NONE) {
-            // TODO preLoadPosition 页面开始显示
-            preLoadPosition = if (firstVisibleItemPosition != lastFirstVisiblePosition) firstVisibleItemPosition else lastVisibleItemPosition
-            joinChannel(preLoadPosition, roomList[preLoadPosition] ?: return, localUid, false)
-            onPageStartLoading(preLoadPosition)
+        if (firstVisibleItemPosition != currLoadPosition && preLoadPosition != firstVisibleItemPosition) {
+            // 下滑
+            preLoadPosition = firstVisibleItemPosition
+        } else if (lastVisibleItemPosition != currLoadPosition && preLoadPosition != lastVisibleItemPosition) {
+            // 上滑
+            preLoadPosition = lastVisibleItemPosition
+        } else {
+            return
         }
+
+        joinChannel(preLoadPosition, roomList[preLoadPosition] ?: return, localUid, false)
+        onPageStartLoading(preLoadPosition)
     }
 
     // OnPageStateEventHandler

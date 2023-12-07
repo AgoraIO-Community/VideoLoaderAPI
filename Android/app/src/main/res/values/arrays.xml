@@ -4,4 +4,9 @@
         <item>开始滑动立即出图</item>
         <item>结束滑动出图</item>
     </string-array>
+
+    <string-array name="show_ui_mode">
+        <item>ViewPager</item>
+        <item>RecycleView</item>
+    </string-array>
 </resources>

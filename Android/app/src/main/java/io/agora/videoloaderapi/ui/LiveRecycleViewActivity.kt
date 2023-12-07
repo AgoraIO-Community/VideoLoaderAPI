@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -33,7 +34,7 @@ import io.agora.videoloaderapi.widget.BindingViewHolder
 
 
 class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActivityBinding>() {
-    private val tag = "hugo"
+    private val tag = "LiveRecycleViewActivity"
 
     companion object {
         private const val EXTRA_ROOM_DETAIL_INFO_LIST = "roomDetailInfoList"
@@ -124,7 +125,7 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
                 Log.d(tag, "onBindViewHolder, position: $position")
                 viewArrayList[position] = holder.binding.root
                 val actualPosition = position % mRoomInfoList.size
-                updateRoomItem(mDataList, position, holder.binding, getItem(actualPosition) ?: return, selectedRoomIndex)
+                updateRoomItem(position, holder.binding, getItem(actualPosition) ?: return)
             }
 
             override fun getItemCount(): Int {
@@ -139,9 +140,6 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
             AgoraApplication.the()?.sliceMode!!) {
             override fun onPageStartLoading(position: Int) {
                 Log.d(tag, "onPageStartLoading, position: $position")
-//                val roomModel = mRoomInfoList[position]
-//                roomModel.roomStatus = ShowRoomStatus.end.value
-//                adapter.replace(position, roomModel)
             }
 
             override fun onPageLoaded(position: Int) {
@@ -156,11 +154,28 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
                 position: Int,
                 info: VideoLoader.AnchorInfo
             ): VideoLoader.VideoCanvasContainer? {
-                Log.d(tag, "onRequireRenderVideo, position: $position， binding.recyclerView.size: ${binding.recyclerView.size}")
+                Log.d(tag, "onRequireRenderVideo, position: $position}")
+                val mRoomInfo = mRoomInfoList[position % mRoomInfoList.size]
+                if ((mRoomInfo.interactStatus == ShowInteractionStatus.pking.value)) {
+                    if (info.channelId == mRoomInfo.roomId) {
+                        return VideoLoader.VideoCanvasContainer(
+                            this@LiveRecycleViewActivity,
+                            viewArrayList[position].findViewById(R.id.iBroadcasterAView),
+                            mRoomInfo.ownerId.toInt()
+                        )
+                    } else if (info.channelId == mRoomInfo.interactRoomName) {
+                        return VideoLoader.VideoCanvasContainer(
+                            this@LiveRecycleViewActivity,
+                            viewArrayList[position].findViewById(R.id.iBroadcasterBView),
+                            mRoomInfo.ownerId.toInt()
+                        )
+                    }
+                }
+
                 return VideoLoader.VideoCanvasContainer(
                     this@LiveRecycleViewActivity,
                     viewArrayList[position].findViewById(R.id.videoLinkingLayout),
-                    mRoomInfoList[position % mRoomInfoList.size].ownerId.toInt()
+                    mRoomInfo.ownerId.toInt()
                 )
             }
         }
@@ -197,11 +212,9 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
     }
 
     private fun updateRoomItem(
-        list: List<ShowRoomDetailModel>,
         position: Int,
         binding: ShowLiveRecycleViewItemBinding,
         roomInfo: ShowRoomDetailModel,
-        selectedRoomIndex: Int
     ) {
         val topLayout = binding.topLayout
         Glide.with(this)
@@ -211,6 +224,18 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
         topLayout.tvRoomName.text = roomInfo.roomName
         topLayout.tvRoomId.text = getString(R.string.show_room_id, roomInfo.roomId)
         topLayout.ivClose.setOnClickListener { onBackPressed() }
+
+        when (roomInfo.interactStatus) {
+            ShowInteractionStatus.idle.value -> {
+                binding.videoPKLayout.root.isVisible = false
+                binding.videoLinkingLayout.root.isVisible = true
+            }
+            ShowInteractionStatus.pking.value -> {
+                binding.topLayout.root.bringToFront()
+                binding.videoLinkingLayout.root.isVisible = false
+                binding.videoPKLayout.root.isVisible = true
+            }
+        }
 
         val anchorList = arrayListOf(
             VideoLoader.AnchorInfo(
@@ -230,6 +255,6 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
             VideoLoader.RoomInfo(
                 roomInfo.roomId,
                 anchorList
-            ),position == selectedRoomIndex)
+            ))
     }
 }

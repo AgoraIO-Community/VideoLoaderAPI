@@ -361,7 +361,6 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             lifecycleOwner.lifecycle.removeObserver(this)
             setupMode = VIEW_SETUP_MODE_REMOVE
             rtcEngine.setupRemoteVideoEx(this, connection)
-            Log.d("hugo", "release view")
             remoteVideoCanvasList.remove(this)
         }
     }
