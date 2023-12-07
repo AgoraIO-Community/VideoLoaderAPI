@@ -167,7 +167,7 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
                         return VideoLoader.VideoCanvasContainer(
                             this@LiveRecycleViewActivity,
                             viewArrayList[position].findViewById(R.id.iBroadcasterBView),
-                            mRoomInfo.ownerId.toInt()
+                            mRoomInfo.interactOwnerId.toInt()
                         )
                     }
                 }
@@ -195,7 +195,7 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
             if (it.interactStatus == ShowInteractionStatus.pking.value) {
                 anchorList.add(VideoLoader.AnchorInfo(
                     it.interactRoomName,
-                    it.ownerId.toInt(),
+                    it.interactOwnerId.toInt(),
                     RtcEngineInstance.generalToken()
                 ))
             }
@@ -247,7 +247,7 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
         if (roomInfo.interactStatus == ShowInteractionStatus.pking.value) {
             anchorList.add(VideoLoader.AnchorInfo(
                 roomInfo.interactRoomName,
-                roomInfo.ownerId.toInt(),
+                roomInfo.interactOwnerId.toInt(),
                 RtcEngineInstance.generalToken()
             ))
         }

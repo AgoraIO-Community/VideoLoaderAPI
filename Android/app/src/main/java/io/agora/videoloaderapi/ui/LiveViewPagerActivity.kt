@@ -159,7 +159,7 @@ class LiveViewPagerActivity : BaseViewBindingActivity<ShowLiveDetailActivityBind
             if (it.interactStatus == ShowInteractionStatus.pking.value) {
                 anchorList.add(VideoLoader.AnchorInfo(
                     it.interactRoomName,
-                    it.ownerId.toInt(),
+                    it.interactOwnerId.toInt(),
                     RtcEngineInstance.generalToken()
                 ))
             }
@@ -196,7 +196,7 @@ class LiveViewPagerActivity : BaseViewBindingActivity<ShowLiveDetailActivityBind
                     if (roomInfo.interactStatus == ShowInteractionStatus.pking.value) {
                         anchorList.add(VideoLoader.AnchorInfo(
                             roomInfo.interactRoomName,
-                            roomInfo.ownerId.toInt(),
+                            roomInfo.interactOwnerId.toInt(),
                             RtcEngineInstance.generalToken()
                         ))
                     }

@@ -109,9 +109,7 @@ class LiveViewPagerFragment : Fragment() {
             initVideoView()
         }
         initTopLayout()
-        if (mRoomInfo.interactStatus == ShowInteractionStatus.pking.value) {
-            refreshViewDetailLayout(2)
-        }
+        refreshViewDetailLayout(mRoomInfo.interactStatus)
     }
 
     private fun initTopLayout() {
@@ -144,14 +142,14 @@ class LiveViewPagerFragment : Fragment() {
                 mRtcVideoSwitcher.renderVideo(
                     VideoLoader.AnchorInfo(
                         mRoomInfo.interactRoomName,
-                        mRoomInfo.ownerId.toInt(),
+                        mRoomInfo.interactOwnerId.toInt(),
                         RtcEngineInstance.generalToken()
                     ),
                     RtcEngineInstance.localUid(),
                     VideoLoader.VideoCanvasContainer(
                         viewLifecycleOwner,
                         mBinding.videoPKLayout.iBroadcasterBView,
-                        mRoomInfo.ownerId.toInt()
+                        mRoomInfo.interactOwnerId.toInt()
                     )
                 )
             } else {
@@ -201,7 +199,7 @@ class LiveViewPagerFragment : Fragment() {
                     return VideoLoader.VideoCanvasContainer(
                         viewLifecycleOwner,
                         mBinding.videoPKLayout.iBroadcasterBView,
-                        mRoomInfo.ownerId.toInt()
+                        mRoomInfo.interactOwnerId.toInt()
                     )
                 }
             } else {
