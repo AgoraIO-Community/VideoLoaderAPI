@@ -7,6 +7,7 @@
 - [Android] 修复滑动过程中可能出现的停止渲染问题
 - [Android] 修复滑动过程中可能出现的音频停止播放问题
 - [Android] 优化demo逻辑, 支持体验更多房间
+- [Android] 支持RecycleView的滑动切换直播间模块
 
 ## [0.1.2](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.2)
 - [Android]修复EglRender - Not valid surface问题
