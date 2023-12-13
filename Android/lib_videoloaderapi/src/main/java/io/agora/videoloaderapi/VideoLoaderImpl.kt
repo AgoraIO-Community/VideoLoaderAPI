@@ -116,7 +116,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         token: String?,
         mediaOptions: ChannelMediaOptions?
     ) {
-        Logging.d(tag, "innerSwitchAnchorState, newState: $newState, connection: $connection, anchorStateMap: $anchorStateMap")
+        Log.d(tag, "innerSwitchAnchorState, newState: $newState, connection: $connection, anchorStateMap: $anchorStateMap")
         // anchorStateMap 无当前主播记录
         if (anchorStateMap.none {it.key.isSameChannel(connection)}) {
             val rtcConnectionWrap = RtcConnectionWrap(connection)
@@ -240,6 +240,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             autoSubscribeAudio = false
                         }
                         val ret = rtcEngine.updateChannelMediaOptionsEx(options, connection)
+                        remoteVideoCanvasList.filter { it.connection.channelId == connection.channelId }.forEach { it.release() }
                         Logging.d(tag, "updateChannelMediaOptionsEx, connection:$connection, ret:$ret")
                     }
                     oldState == AnchorState.IDLE && newState == AnchorState.JOINED -> {

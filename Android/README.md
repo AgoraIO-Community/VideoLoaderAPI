@@ -6,13 +6,13 @@ The VideoLoaderAPI is an API for achieving quick-join and quick-switch capabilit
 
 ### 1. Quick Start
 
-This section mainly describes how to quickly run the VideoLoaderAPI Demo.
+This section mainly describes how to quickly run the VideoLoaderAPI Demo
 
 #### 1.1 Environment Preparation
 
 - Minimum compatibility with Android 5.0 (SDK API Level 21)
-- Android Studio 3.5 or above.
-- Android devices running Android 5.0 or above.
+- Android Studio 3.5 or above
+- Android devices running Android 5.0 or above
 
 #### 1.2 Running the Sample
 
@@ -50,7 +50,13 @@ CLOUD_PLAYER_SECRET=<Your Agora Customer Secret>
 >
 > - Quick switch
 >
->   code reference: The implementation of `OnPageChangeCallback` in [LiveDetailActivity](http://app/src/main/java/io/agora/videoloaderapi/ui/LiveDetailActivity.kt)
+>   - ViewPager
+>   
+>     code reference: The implementation of `OnPageChangeCallback` in [LiveViewPagerActivity](app/src/main/java/io/agora/videoloaderapi/ui/LiveViewPagerActivity.kt)
+>   
+>   - RecycleView
+>   
+>     code reference: The implementation of `OnScrollListener` in [LiveRecycleViewActivity](app/src/main/java/io/agora/videoloaderapi/ui/LiveRecycleViewActivity.kt)
 
 
 

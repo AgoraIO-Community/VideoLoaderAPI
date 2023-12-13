@@ -87,6 +87,7 @@ class ShowSyncManagerServiceImpl: ShowServiceProtocol {
                 ShowRoomStatus.activity.value,
                 interactionStatus,
                 interactionRoomName,
+                kRobotUid.toString(),
                 0.0,
                 0.0
             )
