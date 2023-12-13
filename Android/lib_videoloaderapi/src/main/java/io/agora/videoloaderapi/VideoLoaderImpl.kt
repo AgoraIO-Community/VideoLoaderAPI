@@ -240,6 +240,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                             autoSubscribeAudio = false
                         }
                         val ret = rtcEngine.updateChannelMediaOptionsEx(options, connection)
+                        remoteVideoCanvasList.filter { it.connection.channelId == connection.channelId }.forEach { it.release() }
                         Logging.d(tag, "updateChannelMediaOptionsEx, connection:$connection, ret:$ret")
                     }
                     oldState == AnchorState.IDLE && newState == AnchorState.JOINED -> {
