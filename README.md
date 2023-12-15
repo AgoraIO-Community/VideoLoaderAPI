@@ -1,26 +1,25 @@
-# 秒切/秒开场景化API
+# VideoLoaderAPI
+
+*English | [中文](README.zh.md)*  
 
 ## 概述
+Quick Switch/Quick Join API is a scenario-based API solution designed by Agora for fast rendering in live streaming scenes. It allows developers to achieve fast rendering and smooth switching experiences in live streaming scenarios.
 
-秒切/秒开API是声网面向直播场景下极速出图设计的场景化API解决方案，可以让开发者在直播场景下，获得极速秒开、丝滑切换体验。
+### Terminology
+- **Quick Join**: When a user enters a live streaming room, the user can see the video rendering in the shortest possible time without a loading process.
+- **Quick Switch**: When a user is already in a live streaming room, switching to the next or previous room allows the user to see the video rendering of the corresponding room instantly.
 
-### 名词描述：
-- **秒开**：在客户进入直播间时，可以最短时间看到画面出图，无加载过程。
-- **秒切**：在客户已经在直播间内，切换到下一个房间或者上一个房间时，看到对应房间画面秒出图。 
+## Quick Integration
 
-## 快速集成
-
-| 平台     | Example                   |
+| Platform     | Example                   |
 |---------|------------------------|
 | Android | [VideoLoaderAPI(Android)](Android) |
 | iOS     | [VideoLoaderAPI(iOS)](iOS)   |
 
 ---
 
-### 集成遇到困难，该如何联系声网获取协助
-
-> 方案1：如果您已经在使用声网服务或者在对接中，可以直接联系对接的销售或服务；
-> 
-> 方案2：发送邮件给[support@agora.io](mailto:support@agora.io)咨询
+### Difficulties in integration? Contact Agora for assistance
+Join our WeChat group.
+ ![](https://download.agora.io/demo/release/SDHY_QA.jpg)
 
 ---
