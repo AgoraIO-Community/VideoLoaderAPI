@@ -40,8 +40,8 @@
   static let CloudPlayerKey: String? = <#Your CloudPlayerKey#>
   static let CloudPlayerSecret: String? = <#Your CloudPlayerSecret#>
   ```
-- 打开终端，进入到[Podfile](Example/Podfile)目录下，执行`pod install`命令
-- 最后打开```VideoLoaderAPI.xcworkspace```，运行即可开始您的体验
+- 打开终端，进入到[Podfile](Example/Podfile)目录下，执行`pod install`命令，生成`VideoLoaderAPI.xcworkspace`文件
+- 最后打开`VideoLoaderAPI.xcworkspace`，运行即可开始您的体验
 
 ## 3. 项目介绍
 

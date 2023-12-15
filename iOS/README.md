@@ -22,8 +22,8 @@ This document provides a guide on how to quickly integrate the VideoLoaderAPI.
   static let CloudPlayerKey: String? = <#Your CloudPlayerKey#>
   static let CloudPlayerSecret: String? = <#Your CloudPlayerSecret#>
   ```
-- Open the terminal, navigate to the [Podfile](Example/Podfile) directory, and execute the `pod install` command
-- Finally, open ```VideoLoaderAPI.xcworkspace``` and run the project to start your experience
+- Open the terminal and navigate to the directory of [Podfile](Example/Podfile). Execute the command pod install to generate the `VideoLoaderAPI.xcworkspace` file.
+- Finally, open `VideoLoaderAPI.xcworkspace` and run the project to start your experience
 
 
 ## 3. Project Introduction
