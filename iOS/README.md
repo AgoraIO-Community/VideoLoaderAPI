@@ -26,7 +26,34 @@ This document provides a guide on how to quickly integrate the VideoLoaderAPI.
 - Finally, open [VideoLoaderAPI.xcworkspace](Example/VideoLoaderAPI.xcworkspace) and run the project to start your experience
 
 
-## 3.Quick Integration
+## 3. Project Introduction
+
+- <mark>1. Overview</mark>
+> The VideoLoaderAPI is an API for achieving quick-join and quick-switch capabilities in video live streaming. This module aims to help video streaming developers integrate Agora's quick-join and quick-switch features more quickly.
+>
+- <mark>2. Function Introduction</mark>
+> The VideoLoaderAPI Demo currently covers the following functions:
+> - Selection of preload mode and video rendering mode 
+>
+>   Related code reference: [DebugSettingViewController.swift](Example/VideoLoaderAPI/DebugSettingViewController.swift)
+>
+> - Quick join
+>
+>   Related code reference: [RoomCollectionListViewController.swift](Example/VideoLoaderAPI/RoomCollectionListViewController.swift)
+>
+> - Quick switch
+>   Related code reference: [RoomCollectionViewController.swift](Example/VideoLoaderAPI/Normal/CollectionView/CollectionRoomViewController.swift) 
+>
+- 3.File Introduction
+
+Related code reference: [VideoLoaderAPI](VideoLoaderAPI/Classes/)
+
+* [UIView+VideoLoader.swift](VideoLoaderAPI/Classes/UI/UIView+VideoLoader.swift): 秒开事件处理模块
+* [AGCollectionLoadingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionLoadingDelegateHandler.swift): 房间列表滑动事件处理模块
+* [AGCollectionSlicingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionSlicingDelegateHandler.swift): 直播间切换事件处理模块
+* [VideoLoaderApiImpl.swift](VideoLoaderAPI/Classes/VideoLoaderApiImpl.swift): 内部使用处理频道管理类
+
+## 4.Quick Integration
 ### Dependency Integration
 - Copy the VideoLoaderAPI directory from the example code and add it to your project, at the same level as the Podfile
 

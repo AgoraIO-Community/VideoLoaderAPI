@@ -43,7 +43,34 @@
 - 打开终端，进入到[Podfile](Example/Podfile)目录下，执行`pod install`命令
 - 最后打开[VideoLoaderAPI.xcworkspace](Example/VideoLoaderAPI.xcworkspace)，运行即可开始您的体验
 
-## 3.快速接入
+## 3. 项目介绍
+
+- <mark>1. 概述</mark>
+> VideoLoaderAPI 即秒开秒切场景化api, 该模块旨在帮助视频直播开发者更快集成声网秒切、秒开相关能力的最佳实践
+>
+- <mark>2. 功能介绍</mark>
+> VideoLoaderAPI Demo 目前已涵盖以下功能
+> - 选择预加载模式和视频出图模式
+>
+>   相关代码请参考：[DebugSettingViewController.swift](Example/VideoLoaderAPI/DebugSettingViewController.swift)
+>
+> - 秒开
+>
+>   相关代码请参考：[RoomCollectionListViewController.swift](Example/VideoLoaderAPI/RoomCollectionListViewController.swift)
+>
+> - 秒切
+>     相关代码请参考：[RoomCollectionViewController.swift](Example/VideoLoaderAPI/Normal/CollectionView/CollectionRoomViewController.swift) 中的 OnPageChangeCallback 的实现
+>
+- 3.文件简介
+
+相关核心代码请参考：[VideoLoaderAPI](VideoLoaderAPI/Classes/)
+
+* [UIView+VideoLoader.swift](VideoLoaderAPI/Classes/UI/UIView+VideoLoader.swift): 秒开事件处理模块
+* [AGCollectionLoadingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionLoadingDelegateHandler.swift): 房间列表滑动事件处理模块
+* [AGCollectionSlicingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionSlicingDelegateHandler.swift): 直播间切换事件处理模块
+* [VideoLoaderApiImpl.swift](VideoLoaderAPI/Classes/VideoLoaderApiImpl.swift): 内部使用处理频道管理类
+
+## 4.快速接入
 ### 集成依赖
 - 把示例代码的目录VideoLoaderAPI拷贝至自己的工程里，例如与Podfile文件同级
 - 在Podfile文件里加入
