@@ -105,8 +105,8 @@
 #### 秒开定义
 观众从点击房间列表内某个直播间, 到进入直播间内看到直播画面的过程定义为 “秒开”
 #### 秒开的最佳实践
-  - 房间列表页面对视野范围内的频道进行 `preloadChannel`（channelList, token）
-    - 如果房间总数小于20, 可以对所有房间进行 `preloadChannel`
+  - 房间列表页面对视野范围内的频道进行 `preloadChannel`(channelList, token)
+    - 如果房间总数小于20, 可以对所有房间进行`preloadChannel`
     - 如果大于20, 对前20个房间进行 `preloadChannel`, 在滑动房间列表时, 当滑动结束, 对视野范围内的房间进行 preloadChannel
  
   - 点击直播间 item 处理逻辑：
