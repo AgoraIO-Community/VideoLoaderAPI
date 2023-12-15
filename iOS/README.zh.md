@@ -41,7 +41,7 @@
   static let CloudPlayerSecret: String? = <#Your CloudPlayerSecret#>
   ```
 - 打开终端，进入到[Podfile](Example/Podfile)目录下，执行`pod install`命令
-- 最后打开[VideoLoaderAPI.xcworkspace](Example/VideoLoaderAPI.xcworkspace)，运行即可开始您的体验
+- 最后打开```VideoLoaderAPI.xcworkspace```，运行即可开始您的体验
 
 ## 3. 项目介绍
 
@@ -59,7 +59,7 @@
 >   相关代码请参考：[RoomCollectionListViewController.swift](Example/VideoLoaderAPI/RoomCollectionListViewController.swift)
 >
 > - 秒切
->     相关代码请参考：[RoomCollectionViewController.swift](Example/VideoLoaderAPI/Normal/CollectionView/CollectionRoomViewController.swift) 中的 OnPageChangeCallback 的实现
+>     相关代码请参考：[RoomCollectionViewController.swift](Example/VideoLoaderAPI/Normal/CollectionView/CollectionRoomViewController.swift) 
 >
 - 3.文件简介
 

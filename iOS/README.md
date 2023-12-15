@@ -23,7 +23,7 @@ This document provides a guide on how to quickly integrate the VideoLoaderAPI.
   static let CloudPlayerSecret: String? = <#Your CloudPlayerSecret#>
   ```
 - Open the terminal, navigate to the [Podfile](Example/Podfile) directory, and execute the `pod install` command
-- Finally, open [VideoLoaderAPI.xcworkspace](Example/VideoLoaderAPI.xcworkspace) and run the project to start your experience
+- Finally, open ```VideoLoaderAPI.xcworkspace``` and run the project to start your experience
 
 
 ## 3. Project Introduction
@@ -48,10 +48,10 @@ This document provides a guide on how to quickly integrate the VideoLoaderAPI.
 
 Related code reference: [VideoLoaderAPI](VideoLoaderAPI/Classes/)
 
-* [UIView+VideoLoader.swift](VideoLoaderAPI/Classes/UI/UIView+VideoLoader.swift): 秒开事件处理模块
-* [AGCollectionLoadingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionLoadingDelegateHandler.swift): 房间列表滑动事件处理模块
-* [AGCollectionSlicingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionSlicingDelegateHandler.swift): 直播间切换事件处理模块
-* [VideoLoaderApiImpl.swift](VideoLoaderAPI/Classes/VideoLoaderApiImpl.swift): 内部使用处理频道管理类
+* [UIView+VideoLoader.swift](VideoLoaderAPI/Classes/UI/UIView+VideoLoader.swift): event handling module for quick join
+* [AGCollectionLoadingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionLoadingDelegateHandler.swift): event handling module for room list scrolling
+* [AGCollectionSlicingDelegateHandler.swift](VideoLoaderAPI/Classes/UI/AGCollectionSlicingDelegateHandler.swift): event handling module for switching between live rooms
+* [VideoLoaderApiImpl.swift](VideoLoaderAPI/Classes/VideoLoaderApiImpl.swift): the internal class used to handle channel management
 
 ## 4.Quick Integration
 ### Dependency Integration
