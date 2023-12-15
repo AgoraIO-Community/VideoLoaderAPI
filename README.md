@@ -2,7 +2,7 @@
 
 *English | [中文](README.zh.md)*  
 
-## 概述
+## Overview
 Quick Switch/Quick Join API is a scenario-based API solution designed by Agora for fast rendering in live streaming scenes. It allows developers to achieve fast rendering and smooth switching experiences in live streaming scenarios.
 
 ### Terminology
