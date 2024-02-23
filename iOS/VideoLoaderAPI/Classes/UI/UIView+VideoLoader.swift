@@ -118,6 +118,9 @@ extension UIView {
                     return
                 }
                 ag_eventHandler?.completion?()
+                
+                //上报耗时开始
+                VideoLoaderApiImpl.shared.startMediaRenderingTracing(anchorId: roomInfo.channelName())
                 return
             }
             debugLoaderPrint("[UI]onGesture cancel")
@@ -127,9 +130,6 @@ extension UIView {
                                                             anchorInfo: anchorInfo,
                                                             tagId: roomInfo.channelName())
             }
-            
-            //上报耗时开始
-            VideoLoaderApiImpl.shared.startMediaRenderingTracing(anchorId: roomInfo.channelName())
         default:
             break
         }
