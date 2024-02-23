@@ -20,6 +20,7 @@ class RoomCollectionListViewController: UIViewController {
     }
     private lazy var refreshControl: UIRefreshControl = {
         let ctrl = UIRefreshControl()
+        ctrl.backgroundColor = .white
         ctrl.addTarget(self, action: #selector(refreshControlValueChanged), for: .valueChanged)
         return ctrl
     }()
@@ -66,6 +67,7 @@ class RoomCollectionListViewController: UIViewController {
         let w = view.bounds.width / 2 - 5
         layout.itemSize = CGSize(width: w, height: w * 1.5)
         let collectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: layout)
+        collectionView.backgroundColor = .white
         collectionView.register(RoomListViewCell.self, forCellWithReuseIdentifier: kUIListViewCellIdentifier)
         collectionView.scrollsToTop = false
         collectionView.delegate = self.delegateHandler
@@ -151,6 +153,7 @@ class RoomCollectionListViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.roomList = self.getMoreRoomList()
             self.refreshControl.endRefreshing()
+            self.listView.reloadData()
         }
     }
 }
