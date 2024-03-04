@@ -153,6 +153,9 @@
           }
           
           return true
+      } onRequireRenderVideo: { _ in
+            // 最佳主播画面渲染时机
+            return nil
       } completion: { [weak self] in
           guard let self = self else {return}
           //获取到被点击了，进入房间详情页面

@@ -134,6 +134,9 @@ The process in which the audience quickly sees the next live stream video after 
           }
           
           return true
+      } onRequireRenderVideo: { _ in
+            // The Best Time for Anchor Rendering
+            return nil
       } completion: { [weak self] in
           guard let self = self else {return}
           //Got clicked and entered the room details page

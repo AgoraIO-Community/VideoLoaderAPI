@@ -172,6 +172,7 @@ extension RoomCollectionListViewController: UICollectionViewDataSource {
                               localUid: kCurrentUid) { state in
             return true
         } onRequireRenderVideo: { _ in
+            // 最佳主播画面渲染时机
             return nil
         } completion: { [weak self] in
             guard let self = self else {return}
