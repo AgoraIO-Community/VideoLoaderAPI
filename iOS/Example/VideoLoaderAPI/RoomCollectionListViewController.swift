@@ -171,6 +171,8 @@ extension RoomCollectionListViewController: UICollectionViewDataSource {
         cell.ag_addPreloadTap(roomInfo: room,
                               localUid: kCurrentUid) { state in
             return true
+        } onRequireRenderVideo: { _ in
+            return nil
         } completion: { [weak self] in
             guard let self = self else {return}
             let vc = RoomCollectionViewController()
