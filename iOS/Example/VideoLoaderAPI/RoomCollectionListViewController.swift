@@ -18,6 +18,12 @@ class RoomCollectionListViewController: UIViewController {
             listView.reloadData()
         }
     }
+    private lazy var refreshControl: UIRefreshControl = {
+        let ctrl = UIRefreshControl()
+        ctrl.backgroundColor = .white
+        ctrl.addTarget(self, action: #selector(refreshControlValueChanged), for: .valueChanged)
+        return ctrl
+    }()
     
     private func _initAPI() {
         let api = VideoLoaderApiImpl.shared
@@ -61,12 +67,13 @@ class RoomCollectionListViewController: UIViewController {
         let w = view.bounds.width / 2 - 5
         layout.itemSize = CGSize(width: w, height: w * 1.5)
         let collectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: layout)
+        collectionView.backgroundColor = .white
         collectionView.register(RoomListViewCell.self, forCellWithReuseIdentifier: kUIListViewCellIdentifier)
         collectionView.scrollsToTop = false
         collectionView.delegate = self.delegateHandler
         collectionView.dataSource = self
         collectionView.contentInsetAdjustmentBehavior = .never
-        collectionView.bounces = false
+//        collectionView.bounces = false
         collectionView.showsVerticalScrollIndicator = false
         return collectionView
     }()
@@ -75,6 +82,7 @@ class RoomCollectionListViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         _initAPI()
+        listView.refreshControl = self.refreshControl
         view.addSubview(listView)
         _loadToken()
         ShowRobotService.shared.startCloudPlayers(count: 10)
@@ -140,6 +148,14 @@ class RoomCollectionListViewController: UIViewController {
         let vc = DebugSettingViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    @objc func refreshControlValueChanged() {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.roomList = self.getMoreRoomList()
+            self.refreshControl.endRefreshing()
+            self.listView.reloadData()
+        }
+    }
 }
 
 extension RoomCollectionListViewController: UICollectionViewDataSource {
@@ -155,6 +171,9 @@ extension RoomCollectionListViewController: UICollectionViewDataSource {
         cell.ag_addPreloadTap(roomInfo: room,
                               localUid: kCurrentUid) { state in
             return true
+        } onRequireRenderVideo: { _ in
+            // 最佳主播画面渲染时机
+            return nil
         } completion: { [weak self] in
             guard let self = self else {return}
             let vc = RoomCollectionViewController()

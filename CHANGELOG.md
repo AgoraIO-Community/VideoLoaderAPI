@@ -1,6 +1,10 @@
 
 
-*English | [中文](CHANGELOG.zh.md)*  
+*English | [中文](CHANGELOG.zh.md)* 
+
+## [0.1.4](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.4)
+- [iOS]Fix the issue of reload CollectionView and click failure when touching.
+- [iOS]Add callback support for obtaining the best rendering canvas when touching.
 
 ## [0.1.3](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.3)
 - [iOS] Fixed the issue of not being able to remove excess channels due to changes in pk objects after resetting the roomList.
