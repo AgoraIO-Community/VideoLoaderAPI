@@ -196,18 +196,17 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
                             adapter.notifyItemRangeChanged(3, mRoomInfoList.size - 3)
 
                             binding.recyclerView.post {
-                                for (i in 3 until mRoomInfoList.size - 1) {
-                                    onPageScrollEventHandler?.updateRoomInfo(i, VideoLoader.RoomInfo(
-                                        mRoomInfoList[i].roomId,
-                                        arrayListOf(
-                                            VideoLoader.AnchorInfo(
-                                                mRoomInfoList[i].roomId,
-                                                mRoomInfoList[i].ownerId.toInt(),
-                                                RtcEngineInstance.generalToken()
-                                            )
+                                // 这里只用 updateRoomInfo 受影响的当前直播间
+                                onPageScrollEventHandler?.updateRoomInfo(3, VideoLoader.RoomInfo(
+                                    mRoomInfoList[3].roomId,
+                                    arrayListOf(
+                                        VideoLoader.AnchorInfo(
+                                            mRoomInfoList[3].roomId,
+                                            mRoomInfoList[3].ownerId.toInt(),
+                                            RtcEngineInstance.generalToken()
                                         )
-                                    ))
-                                }
+                                    )
+                                ))
                             }
                         }, 3000)
                     }
