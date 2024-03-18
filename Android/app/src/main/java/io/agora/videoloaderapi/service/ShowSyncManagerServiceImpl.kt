@@ -70,7 +70,7 @@ class ShowSyncManagerServiceImpl: ShowServiceProtocol {
             val robotRoomId = robotRoomIds[i % 6]
             val robotId = robotRoomId % 10
             var interactionRoomName = ""
-            val interactionStatus = if ((0..1).random() % 2 == 0) ShowInteractionStatus.pking.value else ShowInteractionStatus.idle.value
+            val interactionStatus = ShowInteractionStatus.idle.value
             if (interactionStatus == ShowInteractionStatus.pking.value) {
                 val robotRooms = ArrayList(kRobotVideoRoomIds)
                 robotRooms.remove(robotRoomId)

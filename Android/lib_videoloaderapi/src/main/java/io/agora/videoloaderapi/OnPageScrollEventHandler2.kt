@@ -50,6 +50,7 @@ abstract class OnPageScrollEventHandler2 constructor(
     private var isFirst = true
 
     fun onRoomCreated(position: Int, info: VideoLoader.RoomInfo) {
+        Logging.i(tag, "onRoomCreated, position: $position, info:$info")
         roomList.put(position, info)
         if (isFirst) {
             isFirst = false
@@ -72,6 +73,7 @@ abstract class OnPageScrollEventHandler2 constructor(
     }
 
     fun updateRoomInfo(position: Int, info: VideoLoader.RoomInfo) {
+        Logging.i(tag, "updateRoomInfo, position: $position, info:$info")
         if (info.roomId != roomList[position].roomId) return
         val oldAnchorList = roomList[position].anchorList
         val newAnchorList = info.anchorList
@@ -96,6 +98,8 @@ abstract class OnPageScrollEventHandler2 constructor(
         val index = roomsForPreloading.indexOf(roomInfo)
         roomsForPreloading[index] = info
         roomList[position] = info
+        // 这里需要更新curr position
+        currLoadPosition = layoutManager.findFirstVisibleItemPosition()
     }
 
     fun getCurrentRoomPosition(): Int {
@@ -139,7 +143,7 @@ abstract class OnPageScrollEventHandler2 constructor(
         // 检查新的页面是否开始出现
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
         val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-        //Log.d("hugo", "onScrolled, currLoadPosition：currLoadPosition firstVisibleItemPosition: $firstVisibleItemPosition, lastVisibleItemPosition: $lastVisibleItemPosition")
+        Logging.i(tag, "onScrolled, currLoadPosition：$currLoadPosition firstVisibleItemPosition: $firstVisibleItemPosition, lastVisibleItemPosition: $lastVisibleItemPosition")
         // 和上次第一个可见的item不同，认为是新的页面开始加载
         if (firstVisibleItemPosition != currLoadPosition && preLoadPosition != firstVisibleItemPosition) {
             // 下滑
