@@ -1,6 +1,5 @@
 package io.agora.videoloaderapi
 
-import android.util.Log
 import android.view.TextureView
 import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -8,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import io.agora.rtc2.*
 import io.agora.rtc2.internal.Logging
 import io.agora.rtc2.video.VideoCanvas
+import org.json.JSONObject
 import java.util.*
 
 /**
@@ -30,6 +30,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
     private val remoteVideoCanvasList = Collections.synchronizedList(mutableListOf<RemoteVideoCanvasWrap>())
 
     override fun cleanCache() {
+        VideoLoader.reportCallScenarioApi("cleanCache", JSONObject())
         anchorStateMap.forEach {
             innerSwitchAnchorState(AnchorState.IDLE, 0, it.key, null, null)
         }
@@ -37,6 +38,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
     }
 
     override fun preloadAnchor(anchorList: List<VideoLoader.AnchorInfo>, uid: Int) {
+        VideoLoader.reportCallScenarioApi("cleanCache", JSONObject().put("anchorList", anchorList).put("uid", uid))
         anchorList.forEach {
             rtcEngine.preloadChannel(it.token, it.channelId, uid)
         }
@@ -46,12 +48,13 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         newState: AnchorState,
         anchorInfo: VideoLoader.AnchorInfo,
         uid: Int,
-) {
+    ) {
+        VideoLoader.reportCallScenarioApi("switchAnchorState", JSONObject().put("newState", newState).put("anchorInfo", anchorInfo).put("uid", uid))
         innerSwitchAnchorState(newState, anchorInfo.anchorUid, RtcConnection(anchorInfo.channelId, uid), anchorInfo.token, null)
     }
 
     override fun renderVideo(anchorInfo: VideoLoader.AnchorInfo, localUid: Int, container: VideoLoader.VideoCanvasContainer) {
-        Logging.i(tag, "renderVideo called: $anchorInfo")
+        VideoLoader.reportCallScenarioApi("renderVideo", JSONObject().put("anchorInfo", anchorInfo).put("localUid", localUid).put("container", container))
         remoteVideoCanvasList.firstOrNull {
             it.connection.channelId == anchorInfo.channelId && it.uid == container.uid && it.renderMode == container.renderMode && it.lifecycleOwner == container.lifecycleOwner
         }?.let {

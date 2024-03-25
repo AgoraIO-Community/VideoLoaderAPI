@@ -2,11 +2,9 @@ package io.agora.videoloaderapi
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.util.SparseArray
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import io.agora.rtc2.*
 import io.agora.rtc2.internal.Logging
 import java.util.*
