@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import io.agora.rtc2.Constants
 import io.agora.rtc2.RtcEngineEx
+import org.json.JSONObject
 
 /**
  * 视频流管理模块
@@ -19,8 +20,20 @@ interface VideoLoader {
             if (instance == null) {
                 instance = VideoLoaderImpl(rtcEngine!!)
                 engine.enableInstantMediaRendering()
+                // 数据上报
+                engine.setParameters("{\"rtc.direct_send_custom_event\": true}")
             }
             return instance as VideoLoader
+        }
+
+        // 数据上报
+        fun reportCallScenarioApi(event: String, params: JSONObject) {
+             rtcEngine?.sendCustomReportMessage(
+                 "agora:scenarioAPI",
+                 "4_android_0.1.5",
+                event,
+                params.toString(),
+                0)
         }
 
         fun release() {
@@ -54,7 +67,11 @@ interface VideoLoader {
         val channelId: String = "",
         val anchorUid: Int = 0,
         val token: String = ""
-    )
+    ) {
+        override fun toString(): String {
+            return "channelId:$channelId, anchorUid:$anchorUid"
+        }
+    }
 
     /**
      * 房间信息
