@@ -30,7 +30,7 @@ class RoomCollectionViewController: UIViewController {
         let handler = AGCollectionSlicingDelegateHandler(localUid: kCurrentUid, needPrejoin: needPrejoin)
         handler.videoSlicingType = videoType
         handler.audioSlicingType = audioType
-        handler.onRequireRenderVideo = { [weak self] (info, cell, indexPath) in
+        handler.onRequireRenderVideo = { [weak self] (info, canvas, cell, indexPath) in
             guard let cell = cell as? TestRoomCollectionViewCell else {return nil }
             let roomInfo = self?.roomList[indexPath.row]
             if info.channelName != roomInfo?.channelName() {
