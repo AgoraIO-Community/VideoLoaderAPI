@@ -361,19 +361,19 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
         return realState
     }
     
-    func addRTCListener(anchorId: String, listener: AgoraRtcEngineDelegate) {
+    public func addRTCListener(anchorId: String, listener: AgoraRtcEngineDelegate) {
         let rtcProxy = _getProxy(anchorId: anchorId)
         debugLoaderPrint("[VideoLoaderProfiler] addRTCListener: \(anchorId)")
         rtcProxy.addListener(listener)
     }
     
-    func removeRTCListener(anchorId: String, listener: AgoraRtcEngineDelegate) {
+    public func removeRTCListener(anchorId: String, listener: AgoraRtcEngineDelegate) {
         let rtcProxy = _getProxy(anchorId: anchorId)
         debugLoaderPrint("[VideoLoaderProfiler] removeRTCListener: \(anchorId)")
         rtcProxy.removeListener(listener)
     }
     
-    func getRTCListener(anchorId: String) -> AgoraRtcEngineDelegate? {
+    public func getRTCListener(anchorId: String) -> AgoraRtcEngineDelegate? {
         return rtcProxys[anchorId]
     }
 }
