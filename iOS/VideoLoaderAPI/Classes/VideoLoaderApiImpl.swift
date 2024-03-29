@@ -13,7 +13,7 @@ public class VideoLoaderApiImpl: NSObject {
     public var printClosure: ((String)->())?
     public var warningClosure: ((String)->())?
     public var errorClosure: ((String)->())?
-    private var config: VideoLoaderConfig?
+    var config: VideoLoaderConfig?
     
     private let apiProxy = VideoLoaderApiProxy()
     private var profilerMap: [String: VideoLoaderProfiler] = [:]
@@ -160,6 +160,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
         self.config = config
 //        config.rtcEngine?.setParameters("{\"rtc.qos_for_test_purpose\": true}")
         config.rtcEngine?.setParameters("{\"rtc.direct_send_custom_event\": true}")
+        config.rtcEngine?.setParameters("{\"rtc.log_external_input\": true}")
         _reportMethod(event: "\(#function)")
         cleanCache()
 //        config.rtcEngine?.setParameters("{\"rtc.log_filter\":65535}")
@@ -295,6 +296,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
         videoCanvas.uid = container.uid
         videoCanvas.view = container.container
         videoCanvas.renderMode = .hidden
+        videoCanvas.mirrorMode = container.mirrorMode
         videoCanvas.setupMode = container.setupMode
         let ret = engine.setupRemoteVideoEx(videoCanvas, connection: connection)
         debugLoaderPrint("renderVideo[\(connection.channelId)] ret = \(ret), uid:\(anchorInfo.uid)")
