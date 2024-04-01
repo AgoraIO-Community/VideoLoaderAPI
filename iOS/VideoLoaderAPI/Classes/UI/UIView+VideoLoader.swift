@@ -5,7 +5,7 @@
 //  Created by wushengtao on 2023/9/7.
 //
 
-import Foundation
+import UIKit
 
 private var ag_gestureId: String = ""
  
