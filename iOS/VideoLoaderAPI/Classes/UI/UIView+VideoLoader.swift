@@ -57,11 +57,11 @@ extension UIView {
         }
     }
     
-    public func ag_addPreloadTap(roomInfo: IVideoLoaderRoomInfo,
-                                 localUid: UInt,
-                                 enableProcess: @escaping ((UIGestureRecognizer.State)->Bool),
-                                 onRequireRenderVideo: ((AnchorInfo)->UIView?)?,
-                                 completion: @escaping (()->())) {
+    @objc public func ag_addPreloadTap(roomInfo: IVideoLoaderRoomInfo,
+                                       localUid: UInt,
+                                       enableProcess: @escaping ((UIGestureRecognizer.State)->Bool),
+                                       onRequireRenderVideo: ((AnchorInfo)->UIView?)?,
+                                       completion: @escaping (()->())) {
         let eventHandler = VideoLoaderViewEventHandler()
         eventHandler.roomInfo = roomInfo
         eventHandler.localUid = localUid
