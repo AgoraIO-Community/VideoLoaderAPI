@@ -20,7 +20,7 @@ class ThumbRoomCollectionViewController: UIViewController {
     
     private lazy var delegateHandler: AGCollectionSlicingDelegateHandler = {
         let handler = AGCollectionSlicingDelegateHandler(localUid: kCurrentUid, needPrejoin: true)
-        handler.onRequireRenderVideo = { [weak self] (info, canvas, cell, indexPath) in
+        handler.onRequireRenderVideo = { [weak self] (info, cell, indexPath) in
             guard let cell = cell as? ThumbRoomCollectionViewCell else {return nil }
             return cell.canvasView
         }

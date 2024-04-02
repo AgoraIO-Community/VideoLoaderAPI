@@ -60,7 +60,7 @@ extension UIView {
     @objc public func ag_addPreloadTap(roomInfo: IVideoLoaderRoomInfo,
                                        localUid: UInt,
                                        enableProcess: @escaping ((UIGestureRecognizer.State)->Bool),
-                                       onRequireRenderVideo: ((AnchorInfo, VideoCanvasContainer)->UIView?)?,
+                                       onRequireRenderVideo: ((AnchorInfo)->UIView?)?,
                                        completion: @escaping (()->())) {
         let eventHandler = VideoLoaderViewEventHandler()
         eventHandler.roomInfo = roomInfo
@@ -110,7 +110,7 @@ extension UIView {
                                                             anchorInfo: anchorInfo,
                                                             tagId: roomInfo.channelName())
                 let container = VideoCanvasContainer()
-                if let renderView = self.ag_eventHandler?.onRequireRenderVideo?(anchorInfo, container) {
+                if let renderView = self.ag_eventHandler?.onRequireRenderVideo?(anchorInfo) {
                     container.uid = anchorInfo.uid
                     container.container = renderView
                     VideoLoaderApiImpl.shared.renderVideo(anchorInfo: anchorInfo, container: container)
@@ -151,7 +151,7 @@ class VideoLoaderViewEventHandler: NSObject, UIGestureRecognizerDelegate {
     var roomInfo: IVideoLoaderRoomInfo?
     var localUid: UInt = 0
     var enableProcess: ((UIGestureRecognizer.State)->Bool)?
-    var onRequireRenderVideo: ((AnchorInfo, VideoCanvasContainer)->UIView?)?
+    var onRequireRenderVideo: ((AnchorInfo)->UIView?)?
     var completion: (()->())?
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {

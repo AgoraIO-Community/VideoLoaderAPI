@@ -171,7 +171,7 @@ extension RoomCollectionListViewController: UICollectionViewDataSource {
         cell.ag_addPreloadTap(roomInfo: room,
                               localUid: kCurrentUid) { state in
             return true
-        } onRequireRenderVideo: { _, _ in
+        } onRequireRenderVideo: { _ in
             // 最佳主播画面渲染时机
             return nil
         } completion: { [weak self] in
