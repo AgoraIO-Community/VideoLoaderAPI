@@ -3,7 +3,7 @@
 ## [0.1.5](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.5)
 - 优化日志写入和事件上报。
 - [iOS]修复Objective-C集成问题。
-- [iOS]移除协议内Rtc代理添加方法，请使用AgoraRtcEngineKit的addDelegateEx/removeDelegateEx代替。
+- [iOS]移除协议内Rtc代理添加方法，请使用AgoraRtcEngineKit的 `addDelegateEx` 和 `removeDelegateEx` 代替。
 
 ## [0.1.4](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.4)
 - [iOS]修复触摸时进行reload CollectionView，点击失效问题。
