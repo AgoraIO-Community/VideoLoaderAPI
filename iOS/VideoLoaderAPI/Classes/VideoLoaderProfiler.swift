@@ -23,18 +23,25 @@ public func debugLoaderPrint(_ message: String) {
         closure(message)
         return
     }
-//    apiPrint(message)
+    apiPrint(message)
 }
 
 public func warningLoaderPrint(_ message: String) {
+    if let engine = VideoLoaderApiImpl.shared.config?.rtcEngine {
+        engine.writeLog(.warn, content: "[VideoLoaderApi]\(message)")
+    }
     if let closure = VideoLoaderApiImpl.shared.warningClosure {
         closure(message)
         return
     }
     apiPrint("[Warning]\(message)")
+    
 }
 
 public func errorLoaderPrint(_ message: String) {
+    if let engine = VideoLoaderApiImpl.shared.config?.rtcEngine {
+        engine.writeLog(.error, content: "[VideoLoaderApi]\(message)")
+    }
     if let closure = VideoLoaderApiImpl.shared.errorClosure {
         closure(message)
         return
