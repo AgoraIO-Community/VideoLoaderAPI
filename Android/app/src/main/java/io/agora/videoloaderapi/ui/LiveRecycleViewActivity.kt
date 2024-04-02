@@ -67,6 +67,8 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
     private var toggleVideoRun: RunnableWithDenied? = null
     private var toggleAudioRun: Runnable? = null
     private var viewArrayList = SparseArray<View>()
+//    private var mCurr = 0
+//    private var mock = true
 
     override fun getPermissions() {
         if (toggleVideoRun != null) {
@@ -139,6 +141,7 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
         onPageScrollEventHandler = object : OnPageScrollEventHandler2(layoutManager, RtcEngineInstance.rtcEngine, RtcEngineInstance.localUid(), needPreJoin,
             AgoraApplication.the()?.sliceMode!!) {
             override fun onPageStartLoading(position: Int) {
+                //mCurr = position
                 Log.d(tag, "onPageStartLoading, position: $position")
             }
 
@@ -179,6 +182,38 @@ class LiveRecycleViewActivity : BaseViewBindingActivity<ShowLiveRecycleViewActiv
                 )
             }
         }
+        // 数据源变化测试
+//        binding.recyclerView.addOnScrollListener(object : OnScrollListener() {
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                super.onScrollStateChanged(recyclerView, newState)
+//                // mock 滑倒房间5的时候移除房间4且更新数据源
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    if (mCurr == 4 && mock) {
+//                        // 只mock一次
+//                        mock = false
+//                        binding.recyclerView.postDelayed({
+//                            mRoomInfoList.removeAt(3)
+//                            adapter.remove(3)
+//                            adapter.notifyItemRangeChanged(3, mRoomInfoList.size - 3)
+//
+//                            binding.recyclerView.post {
+//                                // 这里只用 updateRoomInfo 受影响的当前直播间
+//                                onPageScrollEventHandler?.updateRoomInfo(3, VideoLoader.RoomInfo(
+//                                    mRoomInfoList[3].roomId,
+//                                    arrayListOf(
+//                                        VideoLoader.AnchorInfo(
+//                                            mRoomInfoList[3].roomId,
+//                                            mRoomInfoList[3].ownerId.toInt(),
+//                                            RtcEngineInstance.generalToken()
+//                                        )
+//                                    )
+//                                ))
+//                            }
+//                        }, 3000)
+//                    }
+//                }
+//            }
+//        })
         binding.recyclerView.addOnScrollListener(onPageScrollEventHandler as OnScrollListener)
         layoutManager.scrollToPositionWithOffset(selectedRoomIndex, 0)
         adapter.resetAll(mRoomInfoList)

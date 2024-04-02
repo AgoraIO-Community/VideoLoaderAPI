@@ -19,7 +19,7 @@ abstract class OnLiveRoomItemTouchEventHandler constructor(
     private val localUid: Int
 ): View.OnTouchListener {
     private val tag = "OnTouchEventHandler"
-    private val videoSwitcher by lazy { VideoLoader.getImplInstance(mRtcEngine) }
+    private val videoLoader by lazy { VideoLoader.getImplInstance(mRtcEngine) }
     private val clickInternal = 500L
     private var lastClickTime = 0L
 
@@ -31,28 +31,28 @@ abstract class OnLiveRoomItemTouchEventHandler constructor(
         val motionEvent = event ?: return true
         when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
-                Log.d(tag, "click down")
+                VideoLoader.videoLoaderApiLog(tag, "click down, roomInfo:${roomInfo}")
                 roomInfo.anchorList.forEach { anchorInfo->
                     // 加入频道并将远端音量调为0
-                    videoSwitcher.switchAnchorState(AnchorState.JOINED_WITHOUT_AUDIO, anchorInfo, localUid)
-                    //mRtcEngine.adjustUserPlaybackSignalVolumeEx(anchorInfo.anchorUid, 0, RtcConnection(anchorInfo.channelId, localUid))
+                    videoLoader.switchAnchorState(AnchorState.JOINED_WITHOUT_AUDIO, anchorInfo, localUid)
                     // 触发视频渲染最佳时机
                     onRequireRenderVideo(anchorInfo)?.let { canvas ->
-                        videoSwitcher.renderVideo(anchorInfo, localUid, canvas)
+                        videoLoader.renderVideo(anchorInfo, localUid, canvas)
                     }
                 }
             }
             MotionEvent.ACTION_CANCEL -> {
-                Log.d(tag, "click cancel")
+                VideoLoader.videoLoaderApiLog(tag, "click cancel, roomInfo:${roomInfo}")
                 roomInfo.anchorList.forEach {
-                    videoSwitcher.switchAnchorState(AnchorState.IDLE, it, localUid)
+                    videoLoader.switchAnchorState(AnchorState.IDLE, it, localUid)
                 }
             }
             MotionEvent.ACTION_UP -> {
-                Log.d(tag, "click up join channel, roomInfo:${roomInfo}")
+                VideoLoader.videoLoaderApiLog(tag, "click up, roomInfo:${roomInfo}")
                 lastClickTime = System.currentTimeMillis()
-                roomInfo.anchorList.forEach { anchorInfo->
+                roomInfo.anchorList.forEach { anchorInfo ->
                     // 打点
+                    videoLoader.switchAnchorState(AnchorState.JOINED, anchorInfo, localUid)
                     mRtcEngine.startMediaRenderingTracingEx(RtcConnection(anchorInfo.channelId, localUid))
                 }
             }
