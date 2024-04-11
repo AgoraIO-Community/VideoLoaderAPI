@@ -5,7 +5,7 @@
 //  Created by wushengtao on 2023/8/30.
 //
 
-import Foundation
+import UIKit
 
 //触发时机
 @objc public enum AGVideoSlicingType: Int {
@@ -179,8 +179,8 @@ extension AGCollectionSlicingDelegateHandler {
                                              localUid: localUid,
                                              anchorInfo: anchorInfo,
                                              tagId: room.channelName())
-            let renderView = self.onRequireRenderVideo?(anchorInfo, cell, indexPath)
             let container = VideoCanvasContainer()
+            let renderView = self.onRequireRenderVideo?(anchorInfo, cell, indexPath)
             container.uid = anchorInfo.uid
             container.container = renderView
             if state == .idle {
