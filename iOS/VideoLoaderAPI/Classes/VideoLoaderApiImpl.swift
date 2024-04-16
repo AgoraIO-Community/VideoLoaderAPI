@@ -162,7 +162,7 @@ extension VideoLoaderApiImpl {
 extension VideoLoaderApiImpl: IVideoLoaderApi {
     public func setup(config: VideoLoaderConfig) {
         self.config = config
-        reporter = APIReporter(category: kReportCategory, engine: config.rtcEngine!)
+        reporter = APIReporter(type: .videoLoader, version: kApiVersion, engine: config.rtcEngine!)
         _reportMethod(event: "\(#function)")
         cleanCache()
 //        config.rtcEngine?.setParameters("{\"rtc.log_filter\":65535}")
@@ -396,7 +396,7 @@ extension VideoLoaderApiImpl {
     }
 }
 
-let kReportCategory = "4_iOS_0.1.5"
+let kApiVersion = "0.1.5"
 extension VideoLoaderApiImpl {
     private func _reportMethod(event: String, value: [String: Any]? = nil) {
         debugLoaderPrint("_reportMethod event: \(event) value: \(value ?? [:])")
