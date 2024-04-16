@@ -28,9 +28,6 @@ open class AGCollectionSlicingDelegateHandler: AGBaseDelegateHandler {
     private var needPrejoin: Bool = true    //是否需要秒切加速(上下未显示但是已经初始化的页面是否走默认join的策略)
     private var prejoinCount: Int = 1
     private var needReloadData: Bool = false
-    #if DEBUG
-    public private(set) var cellVisibleDate: [String: Date] = [:]
-    #endif
     
     required public convenience init(localUid: UInt, needPrejoin: Bool) {
         self.init(localUid: localUid)
@@ -90,6 +87,11 @@ open class AGCollectionSlicingDelegateHandler: AGBaseDelegateHandler {
     
     public func getModelIndex(visibleIndex: Int) -> Int {
         return visibleIndex
+    }
+    
+    public func cellVisibleTime(channelName: String) -> Int64? {
+        let profiler = VideoLoaderApiImpl.shared._getProfiler(anchorId: channelName)
+        return profiler.perceivedStartTime > 0 ? profiler.perceivedStartTime : nil
     }
 }
 
@@ -260,9 +262,10 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
         needReloadData = false
         self.scrollView = collectionView
         
-        #if DEBUG
-        cellVisibleDate[room.channelName()] = Date()
-        #endif
+        let profiler = VideoLoaderApiImpl.shared._getProfiler(anchorId: room.channelName())
+        profiler.reportExt = ["videoSlicingType": videoSlicingType.rawValue]
+        profiler.reportExt = ["needPrejoin": needPrejoin ? 1 : 0]
+        profiler.perceivedStartTime = Int64(Date().timeIntervalSince1970 * 1000)
     }
     
     open func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

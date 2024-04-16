@@ -8,13 +8,7 @@
 import Foundation
 
 public let kUIListViewCellIdentifier = "ag_UICollectionViewCell"
-func createDateFormatter()-> DateFormatter {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
-    return formatter
-}
 
-public let formatter = createDateFormatter()
 @objc public protocol IVideoLoaderRoomInfo: NSObjectProtocol {
     
     /// 当前房间的互动对象，如果有count > 1表示是pk或连麦，count == 1个表示单主播展示
