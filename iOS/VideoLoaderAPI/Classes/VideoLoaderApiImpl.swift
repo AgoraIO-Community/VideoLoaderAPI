@@ -396,7 +396,7 @@ extension VideoLoaderApiImpl {
     }
 }
 
-let kApiVersion = "0.1.5"
+let kApiVersion = "1.0.0"
 extension VideoLoaderApiImpl {
     private func _reportMethod(event: String, value: [String: Any]? = nil) {
         debugLoaderPrint("_reportMethod event: \(event) value: \(value ?? [:])")
