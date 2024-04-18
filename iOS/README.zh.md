@@ -28,10 +28,14 @@
   > ![](https://fullapp.oss-cn-beijing.aliyuncs.com/scenario_api/callapi/config/1641871111769.png)
   > 点击主要证书下面的复制图标，即可获取项目的 App 证书。
   > ![](https://fullapp.oss-cn-beijing.aliyuncs.com/scenario_api/callapi/config/1637637672988.png)
-- 获取秒切机器人服务配置（CloudPlayerKey、CloudPlayerSecret）
-  > 
-  >   ![xxx](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/show/CloudPlayer.png)
-  > 
+- 秒切机器人服务配置（CloudPlayer）
+    ```json
+    注: 请联系声网技术支持为您的 APPID 开通 rte-cloudplayer 权限, 开通权限后才能启动默认的机器人房间推流
+    ```
+    
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_4.jpg)
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_5.jpg)
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/cloud_player_key_ios.jpg)
 - 在项目的[KeyCenter.swift](Example/VideoLoaderAPI/KeyCenter.swift) 中填入声网的AppId、Certificate、机器人推流配置(CloudPlayerKey、CloudPlayerSecret)
   
   ```
