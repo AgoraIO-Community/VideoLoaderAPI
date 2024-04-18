@@ -13,7 +13,7 @@ This document provides a guide on how to quickly integrate the VideoLoaderAPI.
 - Clone or directly download the project source code
 - Follow [The Account Document](https://docs.agora.io/en/video-calling/reference/manage-agora-account) to get the **App ID** and **App Certificate(if enable token)**.
 - Follow [The Restfull Document](https://docs.agora.io/en/video-calling/reference/restful-authentication) to get the **Customer ID** and **Customer Secret**.
-- Follow [The Media Pull Document](https://docs.agora.io/en/media-pull/get-started/enable-media-pull) to enable media pull for cloud player.
+- Please contact Agora technical support to grant rte-cloudplayer permission to your APPID. Only after granting permission can the default robot room streaming be activated.
 - Fill in Agora's App ID, Certificate, CloudPlayerKey, and CloudPlayerSecret in [KeyCenter.swift](Example/VideoLoaderAPI/KeyCenter.swift)
 
   ```
