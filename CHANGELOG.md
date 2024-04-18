@@ -2,7 +2,7 @@
 
 *English | [中文](CHANGELOG.zh.md)* 
 
-## [0.1.5](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/0.1.5)
+## [1.0.0](https://github.com/AgoraIO-Community/VideoLoaderAPI/releases/tag/1.0.0)
 - Optimized log writing and event reporting.
 - [iOS]Fixed Objective-C integration issues.
 - [iOS]Removed methods for adding delegates within protocols. Please use `addDelegateEx` and `removeDelegateEx` from AgoraRtcEngineKit instead.
