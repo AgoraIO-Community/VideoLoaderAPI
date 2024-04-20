@@ -11,12 +11,13 @@ import org.json.JSONObject
 import java.util.*
 
 class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoader {
-    private val tag = "VideoLoaderTag"
+    private val tag = "VideoLoader"
     private val anchorStateMap = Collections.synchronizedMap(mutableMapOf<RtcConnectionWrap, AnchorState>())
     private val remoteVideoCanvasList = Collections.synchronizedList(mutableListOf<RemoteVideoCanvasWrap>())
 
     override fun cleanCache() {
-        VideoLoader.reportCallScenarioApi("cleanCache", JSONObject())
+        VideoLoader.reporter?.reportFuncEvent("cleanCache", mapOf(), mapOf())
+        VideoLoader.videoLoaderApiLog(tag, "cleanCache")
         anchorStateMap.forEach {
             innerSwitchAnchorState(AnchorState.IDLE, 0, it.key, null, null)
         }
@@ -24,7 +25,8 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
     }
 
     override fun preloadAnchor(anchorList: List<VideoLoader.AnchorInfo>, uid: Int) {
-        VideoLoader.reportCallScenarioApi("cleanCache", JSONObject().put("anchorList", anchorList).put("uid", uid))
+        VideoLoader.reporter?.reportFuncEvent("preloadAnchor", mapOf("anchorList" to anchorList, "uid" to uid), mapOf())
+        VideoLoader.videoLoaderApiLog(tag, "preloadAnchor, anchorList:$anchorList, uid:$uid")
         anchorList.forEach {
             rtcEngine.preloadChannel(it.token, it.channelId, uid)
         }
@@ -36,11 +38,14 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         localUid: Int,
         mediaOptions: ChannelMediaOptions?
     ) {
-        VideoLoader.reportCallScenarioApi("switchAnchorState", JSONObject().put("newState", newState).put("anchorInfo", anchorInfo).put("uid", localUid))
+        VideoLoader.reporter?.reportFuncEvent("switchAnchorState", mapOf("newState" to newState, "anchorInfo" to anchorInfo, "localUid" to localUid), mapOf())
+        VideoLoader.videoLoaderApiLog(tag, "switchAnchorState, newState:$newState, anchorInfo:$anchorInfo, localUid:$localUid, mediaOptions:$mediaOptions")
         innerSwitchAnchorState(newState, anchorInfo.anchorUid, RtcConnection(anchorInfo.channelId, localUid), anchorInfo.token, mediaOptions)
     }
 
-    override fun getRoomState(channelId: String, localUid: Int): AnchorState? {
+    override fun getAnchorState(channelId: String, localUid: Int): AnchorState? {
+        VideoLoader.reporter?.reportFuncEvent("getAnchorState", mapOf("channelId" to channelId, "localUid" to localUid), mapOf())
+        VideoLoader.videoLoaderApiLog(tag, "getAnchorState, channelId:$channelId, localUid:$localUid")
         anchorStateMap.forEach {
             if (it.key.isSameChannel(RtcConnection(channelId, localUid))) {
                 return it.value
@@ -50,10 +55,14 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
     }
 
     override fun renderVideo(anchorInfo: VideoLoader.AnchorInfo, localUid: Int, container: VideoLoader.VideoCanvasContainer) {
-        VideoLoader.reportCallScenarioApi("renderVideo", JSONObject().put("anchorInfo", anchorInfo).put("localUid", localUid).put("container", container))
+        VideoLoader.reporter?.reportFuncEvent("renderVideo", mapOf("anchorInfo" to anchorInfo, "localUid" to localUid, "container" to container), mapOf())
+        VideoLoader.videoLoaderApiLog(tag, "renderVideo, anchorInfo:$anchorInfo, localUid:$localUid, container:$container")
         remoteVideoCanvasList.firstOrNull {
             it.connection.channelId == anchorInfo.channelId && it.uid == container.uid && it.renderMode == container.renderMode && it.lifecycleOwner == container.lifecycleOwner
         }?.let {
+            // remoteVideoCanvasList 内已经存在这个view
+            VideoLoader.videoLoaderApiLog(tag, "remoteVideoCanvasList contains this view")
+
             val videoView = it.view
             val viewIndex = container.container.indexOfChild(videoView)
 
@@ -66,6 +75,8 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             }
         }
 
+        VideoLoader.videoLoaderApiLog(tag, "new view")
+
         var videoView = container.container.getChildAt(container.viewIndex)
         if (videoView !is TextureView) {
             videoView = TextureView(container.container.context)
@@ -77,23 +88,23 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         }
 
         val connection = RtcConnection(anchorInfo.channelId, localUid)
-        anchorStateMap.forEach {
-            if (it.key.isSameChannel(connection)) {
-                val connectionWrap = it.key
-                val remoteVideoCanvasWrap = RemoteVideoCanvasWrap(
-                    connectionWrap,
-                    container.lifecycleOwner,
-                    videoView,
-                    container.renderMode,
-                    container.uid
-                )
-                rtcEngine.setupRemoteVideoEx(
-                    remoteVideoCanvasWrap,
-                    connectionWrap
-                )
-                return
-            }
-        }
+//        anchorStateMap.forEach {
+//            if (it.key.isSameChannel(connection)) {
+//                val connectionWrap = it.key
+//                val remoteVideoCanvasWrap = RemoteVideoCanvasWrap(
+//                    connectionWrap,
+//                    container.lifecycleOwner,
+//                    videoView,
+//                    container.renderMode,
+//                    container.uid
+//                )
+//                rtcEngine.setupRemoteVideoEx(
+//                    remoteVideoCanvasWrap,
+//                    connectionWrap
+//                )
+//                return
+//            }
+//        }
 
         val remoteVideoCanvasWrap = RemoteVideoCanvasWrap(
             connection,

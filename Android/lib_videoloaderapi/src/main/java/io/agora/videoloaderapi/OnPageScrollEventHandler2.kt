@@ -23,7 +23,7 @@ abstract class OnPageScrollEventHandler2 constructor(
     private val needPreJoin: Boolean,
     private val videoScrollMode: AGSlicingType
 ) : RecyclerView.OnScrollListener() {
-    private val tag = "OnPageScrollHandler2"
+    private val tag = "[VideoLoader]Scroll2"
     private val videoLoader by lazy { VideoLoader.getImplInstance(mRtcEngine) }
     private val roomList = SparseArray<VideoLoader.RoomInfo>()
 
@@ -230,8 +230,8 @@ abstract class OnPageScrollEventHandler2 constructor(
             if (roomsJoined.any { it.roomId == conn.roomId }) {
                 continue
             }
-            if (videoLoader.getRoomState(conn.roomId, localUid) != AnchorState.PRE_JOINED) {
-                VideoLoader.videoLoaderApiLog(tag, "switchRoomState, getRoomState: $roomsForPreloading")
+            if (videoLoader.getAnchorState(conn.roomId, localUid) != AnchorState.PRE_JOINED) {
+                VideoLoader.videoLoaderApiLog(tag, "switchRoomState, getAnchorState: $roomsForPreloading")
                 videoLoader.preloadAnchor(conn.anchorList, localUid)
                 conn.anchorList.forEach {
                     if (needPreJoin && currentRoom.anchorList.none { joined -> joined.channelId == it.channelId }) {
@@ -245,14 +245,14 @@ abstract class OnPageScrollEventHandler2 constructor(
         VideoLoader.videoLoaderApiLog(tag, "switchRoomState, connPreLoaded: $connPreLoaded ")
         // 非preJoin房间需要退出频道
         roomsForPreloading.forEach { room ->
-            if (needPreJoin && videoLoader.getRoomState(room.roomId, localUid) == AnchorState.PRE_JOINED && connPreLoaded.none {room.roomId == it.roomId}) {
+            if (needPreJoin && videoLoader.getAnchorState(room.roomId, localUid) == AnchorState.PRE_JOINED && connPreLoaded.none {room.roomId == it.roomId}) {
                 VideoLoader.videoLoaderApiLog(tag, "switchRoomState, remove: $room ")
                 room.anchorList.forEach {
                     if (currentRoom.anchorList.none { joined -> joined.channelId == it.channelId }) {
                         videoLoader.switchAnchorState(AnchorState.IDLE, it, localUid)
                     }
                 }
-            } else if (!needPreJoin && videoLoader.getRoomState(room.roomId, localUid) != AnchorState.IDLE && roomsJoined.none {room.roomId == it.roomId}) {
+            } else if (!needPreJoin && videoLoader.getAnchorState(room.roomId, localUid) != AnchorState.IDLE && roomsJoined.none {room.roomId == it.roomId}) {
                 VideoLoader.videoLoaderApiLog(tag, "switchRoomState, remove: $room ")
                 room.anchorList.forEach {
                     if (currentRoom.anchorList.none { joined -> joined.channelId == it.channelId }) {
