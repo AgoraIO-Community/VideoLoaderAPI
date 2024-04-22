@@ -263,8 +263,7 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
         self.scrollView = collectionView
         
         let profiler = VideoLoaderApiImpl.shared._getProfiler(anchorId: room.channelName())
-        profiler.reportExt = ["videoSlicingType": videoSlicingType.rawValue]
-        profiler.reportExt = ["needPrejoin": needPrejoin ? 1 : 0]
+        profiler.reportExt = ["videoSlicingType": videoSlicingType.rawValue, "needPrejoin": needPrejoin ? 1 : 0]
         profiler.perceivedStartTime = Int64(Date().timeIntervalSince1970 * 1000)
     }
     
