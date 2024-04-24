@@ -51,9 +51,10 @@ abstract class OnLiveRoomItemTouchEventHandler constructor(
                 VideoLoader.videoLoaderApiLog(tag, "click up, roomInfo:${roomInfo}")
                 lastClickTime = System.currentTimeMillis()
                 roomInfo.anchorList.forEach { anchorInfo ->
-                    // 打点
                     videoLoader.switchAnchorState(AnchorState.JOINED, anchorInfo, localUid)
+                    // 打点
                     mRtcEngine.startMediaRenderingTracingEx(RtcConnection(anchorInfo.channelId, localUid))
+                    (videoLoader as VideoLoaderImpl).getProfiler(anchorInfo.channelId).perceivedStartTime = System.currentTimeMillis()
                 }
             }
         }

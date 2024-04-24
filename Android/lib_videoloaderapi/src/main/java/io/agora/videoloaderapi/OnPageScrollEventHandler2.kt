@@ -182,6 +182,7 @@ abstract class OnPageScrollEventHandler2 constructor(
 
             // 打点
             mRtcEngine.startMediaRenderingTracingEx(RtcConnection(anchorInfo.channelId, localUid))
+            (videoLoader as VideoLoaderImpl).getProfiler(anchorInfo.channelId).perceivedStartTime = System.currentTimeMillis()
         }
     }
 
