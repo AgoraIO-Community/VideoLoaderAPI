@@ -211,7 +211,9 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                     }
                     (oldState == AnchorState.PRE_JOINED || oldState == AnchorState.JOINED_WITHOUT_AUDIO) && newState == AnchorState.JOINED -> {
                         // 保持在频道内, 收流
-                        getProfiler(roomId).actualStartTime = System.currentTimeMillis()
+                        if (oldState == AnchorState.PRE_JOINED) {
+                            getProfiler(roomId).actualStartTime = System.currentTimeMillis()
+                        }
                         val options = mediaOptions ?: ChannelMediaOptions().apply {
                             clientRoleType = Constants.CLIENT_ROLE_AUDIENCE
                             audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY
@@ -349,7 +351,6 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         private val tag = "VideoLoaderProfiler"
         var actualStartTime: Long = 0
         var perceivedStartTime: Long = 0
-        var reportExt: MutableMap<String, Any> = HashMap()
         var firstFrameCompletion: ((Long, Int) -> Unit)? = null
 
         init {
@@ -363,14 +364,14 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
             reason: Int,
             elapsed: Int
         ) {
-            val currentTs = System.currentTimeMillis()
-            val actualCost = currentTs - actualStartTime
-            val perceivedCost = currentTs - perceivedStartTime
             Log.d(tag, "remoteVideoStateChangedOfUid[$channelId]: $uid state: $state reason: $reason")
             if (state == 2 && (reason == 6 || reason == 4 || reason == 3)) {
+                val currentTs = System.currentTimeMillis()
+                val actualCost = currentTs - actualStartTime
+                val perceivedCost = currentTs - perceivedStartTime
+
                 Log.d(tag, "channelId[$channelId] uid[$uid] show first frame! actualCost: $actualCost ms perceivedCost: $perceivedCost ms")
-                val ext = reportExt.toMutableMap()
-                ext["channelName"] = channelId
+                val ext = mapOf("channelName" to channelId, "anchorId" to uid)
                 VideoLoader.reporter?.reportCostEvent(
                     ApiCostEvent.FIRST_FRAME_ACTUAL,
                     actualCost.toInt(),
