@@ -351,6 +351,7 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
         private val tag = "VideoLoaderProfiler"
         var actualStartTime: Long = 0
         var perceivedStartTime: Long = 0
+        var reportExt: MutableMap<String, Any> = HashMap()
         var firstFrameCompletion: ((Long, Int) -> Unit)? = null
 
         init {
@@ -371,7 +372,8 @@ class VideoLoaderImpl constructor(private val rtcEngine: RtcEngineEx) : VideoLoa
                 val perceivedCost = currentTs - perceivedStartTime
 
                 Log.d(tag, "channelId[$channelId] uid[$uid] show first frame! actualCost: $actualCost ms perceivedCost: $perceivedCost ms")
-                val ext = mapOf("channelName" to channelId, "anchorId" to uid)
+                val ext = reportExt.toMutableMap()
+                ext["channelName"] = channelId
                 VideoLoader.reporter?.reportCostEvent(
                     ApiCostEvent.FIRST_FRAME_ACTUAL,
                     actualCost.toInt(),
