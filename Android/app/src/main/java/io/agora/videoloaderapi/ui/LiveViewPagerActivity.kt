@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import io.agora.rtc2.IRtcEngineEventHandler
+import io.agora.rtc2.RtcConnection
 import io.agora.videoloaderapi.AgoraApplication
 import io.agora.videoloaderapi.OnPageScrollEventHandler
 import io.agora.videoloaderapi.VideoLoader
@@ -126,6 +128,28 @@ class LiveViewPagerActivity : BaseViewBindingActivity<ShowLiveDetailActivityBind
             override fun onPageStartLoading(position: Int) {
                 // 页面刚刚开始显示
                 Log.d(tag, "onPageStartLoading, position:$position roomId:${mRoomInfoList[position % mRoomInfoList.size]?.roomId}")
+                // 如果 needPreJoin = false 可以在 onPageStartLoading 回调内使用addHandlerEx 监听对应加入房间的回调
+                val mRoomInfo = mRoomInfoList[position % mRoomInfoList.size]
+                RtcEngineInstance.rtcEngine.addHandlerEx(
+                    // 需要设置的代理对象
+                    object : IRtcEngineEventHandler() {
+                        override fun onFirstRemoteVideoFrame(
+                            uid: Int,
+                            width: Int,
+                            height: Int,
+                            elapsed: Int
+                        ) {
+                            super.onFirstRemoteVideoFrame(uid, width, height, elapsed)
+                            Log.d("videoframe", "onFirstRemoteVideoFrame: uid $uid")
+                        }
+                        // ...... 按需要继续 override
+                    },
+                    // 标志设置代理对应的房间
+                    RtcConnection(
+                        mRoomInfo.roomId, // 目标房间的 channelId
+                        RtcEngineInstance.localUid() // 本端用户的 Uid
+                    )
+                )
                 vpFragments[position]?.startLoadPageSafely()
             }
 
