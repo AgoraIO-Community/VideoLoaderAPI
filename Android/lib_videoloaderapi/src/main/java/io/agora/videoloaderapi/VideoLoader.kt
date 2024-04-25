@@ -5,7 +5,8 @@ import androidx.lifecycle.LifecycleOwner
 import io.agora.rtc2.ChannelMediaOptions
 import io.agora.rtc2.Constants
 import io.agora.rtc2.RtcEngineEx
-import org.json.JSONObject
+import io.agora.videoloaderapi.report.APIReporter
+import io.agora.videoloaderapi.report.APIType
 
 /**
  * 房间状态
@@ -27,45 +28,35 @@ enum class AnchorState {
 interface VideoLoader {
 
     companion object {
+        const val version = "1.0.0"
         private var rtcEngine: RtcEngineEx? = null
         private var instance: VideoLoader? = null
+        var reporter: APIReporter? = null
 
         fun getImplInstance(engine: RtcEngineEx): VideoLoader {
             rtcEngine = engine
             if (instance == null) {
-                instance = VideoLoaderImpl(rtcEngine!!)
+                instance = VideoLoaderImpl(engine)
+                reporter = APIReporter(APIType.VIDEO_LOADER, version, engine)
                 engine.enableInstantMediaRendering()
-                // 数据上报
-                engine.setParameters("{\"rtc.direct_send_custom_event\": true}")
-                // 写日志
-                engine.setParameters("{\"rtc.log_external_input\": true}")
             }
             return instance as VideoLoader
         }
 
-        // 数据上报
-        fun reportCallScenarioApi(event: String, params: JSONObject) {
-             rtcEngine?.sendCustomReportMessage(
-                 "agora:scenarioAPI",
-                 "4_android_0.1.5",
-                event,
-                params.toString(),
-                0)
-        }
-
         // 日志输出
         fun videoLoaderApiLog(tag: String, msg: String) {
-            rtcEngine?.writeLog(Constants.LOG_LEVEL_INFO, "[$tag] $msg")
+            reporter?.writeLog("[$tag] $msg", Constants.LOG_LEVEL_INFO)
         }
 
         // 日志输出
         fun videoLoaderApiLogWarning(tag: String, msg: String) {
-            rtcEngine?.writeLog(Constants.LOG_LEVEL_WARNING, "[$tag] $msg")
+            reporter?.writeLog("[$tag] $msg", Constants.LOG_LEVEL_WARNING)
         }
 
         fun release() {
             instance = null
             rtcEngine = null
+            reporter = null
         }
     }
 
@@ -142,7 +133,7 @@ interface VideoLoader {
      * @param channelId 频道名
      * @param localUid 用户id
      */
-    fun getRoomState(channelId: String, localUid: Int): AnchorState?
+    fun getAnchorState(channelId: String, localUid: Int): AnchorState?
 
 
     /**

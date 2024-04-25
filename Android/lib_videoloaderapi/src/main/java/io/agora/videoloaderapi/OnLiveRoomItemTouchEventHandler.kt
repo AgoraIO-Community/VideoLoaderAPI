@@ -18,7 +18,7 @@ abstract class OnLiveRoomItemTouchEventHandler constructor(
     private val roomInfo: VideoLoader.RoomInfo,
     private val localUid: Int
 ): View.OnTouchListener {
-    private val tag = "OnTouchEventHandler"
+    private val tag = "[VideoLoader]Touch"
     private val videoLoader by lazy { VideoLoader.getImplInstance(mRtcEngine) }
     private val clickInternal = 500L
     private var lastClickTime = 0L
@@ -51,9 +51,10 @@ abstract class OnLiveRoomItemTouchEventHandler constructor(
                 VideoLoader.videoLoaderApiLog(tag, "click up, roomInfo:${roomInfo}")
                 lastClickTime = System.currentTimeMillis()
                 roomInfo.anchorList.forEach { anchorInfo ->
-                    // 打点
                     videoLoader.switchAnchorState(AnchorState.JOINED, anchorInfo, localUid)
+                    // 打点
                     mRtcEngine.startMediaRenderingTracingEx(RtcConnection(anchorInfo.channelId, localUid))
+                    (videoLoader as VideoLoaderImpl).getProfiler(anchorInfo.channelId).perceivedStartTime = System.currentTimeMillis()
                 }
             }
         }
