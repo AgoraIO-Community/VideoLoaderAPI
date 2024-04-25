@@ -16,36 +16,40 @@ VideoLoaderAPI 即秒开秒切场景化api, 该模块旨在帮助视频直播开
 
 #### 2. 运行示例
 
-- <mark>1. </mark> 获取声网 App ID -------- [声网Agora - 文档中心 - 如何获取 App ID](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms#%E8%8E%B7%E5%8F%96-app-id)
+## 2. 运行示例
 
-    - 点击创建应用
+- 2.1 进入声网控制台获取 APP ID 和 APP 证书 [控制台入口](https://console.shengwang.cn/overview)
 
-  ![xxx](image/SamplePicture2.png)
+  - 点击创建项目
 
-    - 选择你要创建的应用类型
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_1.jpg)
 
-  ![xxx](image/SamplePicture3.png)
+  - 选择项目基础配置, 鉴权机制需要选择**安全模式**
 
-    - 得到App ID与App 证书
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_2.jpg)
 
-  ![xxx](image/SamplePicture4.png)
+  - 拿到项目 APP ID 与 APP 证书
 
-    - 秒切机器人服务配置（CloudPlayer）
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_3.jpg)
 
-  ![xxx](image/SamplePicture6.png)
+  - 秒切机器人服务配置（CloudPlayer）
+      ```json
+      注: 请联系声网技术支持为您的 APPID 开通 rte-cloudplayer 权限, 开通权限后才能启动默认的机器人房间推流
+      ```
+    
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_4.jpg)
+    ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_5.jpg)
 
-  获取 App 证书 ----- [声网Agora - 文档中心 - 获取 App 证书](https://docs.agora.io/cn/Agora%20Platform/get_appid_token?platform=All%20Platforms#%E8%8E%B7%E5%8F%96-app-%E8%AF%81%E4%B9%A6)
-- <mark>2. </mark> 在项目的[**gradle.properties**](../../gradle.properties)里填写需要的声网 App ID 和 App证书、Cloudplayer 配置  
-  ![xxx](image/SamplePicture1.png)
+- 2.2 在项目的 [**gradle.properties**](../../gradle.properties) 里填写需要的声网 APP ID 和 APP 证书、RESTFUL KEY 和 SECRET
+    ![xxx](image/SamplePicture1.png)
 
   ```texag-0-1gpap96h0ag-1-1gpap96h0ag-0-1gpap96h0ag-1-1gpap96h0ag-0-1gpap96h0ag-1-1gpap96h0ag-0-1gpap96h0ag-1-1gpap96h0ag-0-1gpap96h0ag-1-1gpap96h0
-  AGORA_APP_ID：声网appid  
-  AGORA_APP_CERTIFICATE：声网Certificate 
+  AGORA_APP_ID：声网 APP ID
+  AGORA_APP_CERTIFICATE：声网 APP 证书
   CLOUD_PLAYER_KEY：声网RESTful API key
   CLOUD_PLAYER_SECRET：声网RESTful API secret
-  ```
 
-- <mark>3. </mark> 用 Android Studio 运行项目即可开始您的体验
+- 2.3 用 Android Studio 运行项目即可开始您的体验
 
 #### 3. 项目介绍
 
