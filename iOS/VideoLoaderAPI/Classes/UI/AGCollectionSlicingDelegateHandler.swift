@@ -258,13 +258,13 @@ extension AGCollectionSlicingDelegateHandler: UICollectionViewDelegate, UICollec
             
             //上报开始计算秒切出图
             VideoLoaderApiImpl.shared.startMediaRenderingTracing(anchorId: room.channelName())
+            
+            let profiler = VideoLoaderApiImpl.shared._getProfiler(anchorId: room.channelName())
+            profiler.reportExt = ["videoSlicingType": videoSlicingType.rawValue, "needPrejoin": needPrejoin ? 1 : 0]
+            profiler.perceivedStartTime = Int64(Date().timeIntervalSince1970 * 1000)
         }
         needReloadData = false
         self.scrollView = collectionView
-        
-        let profiler = VideoLoaderApiImpl.shared._getProfiler(anchorId: room.channelName())
-        profiler.reportExt = ["videoSlicingType": videoSlicingType.rawValue, "needPrejoin": needPrejoin ? 1 : 0]
-        profiler.perceivedStartTime = Int64(Date().timeIntervalSince1970 * 1000)
     }
     
     open func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

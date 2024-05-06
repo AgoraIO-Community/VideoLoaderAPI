@@ -133,9 +133,9 @@ extension VideoLoaderApiImpl {
         exConnectionMap[channelId] = connection
             
         if ret == 0 {
-            debugLoaderPrint("join room ex[\(channelId)]: ownerId: \(ownerId) connection count: \(exConnectionMap.count)")
+            debugLoaderPrint("join room[\(channelId)] ex: ownerId: \(ownerId) connection count: \(exConnectionMap.count)")
         }else{
-            errorLoaderPrint("join room ex fail[\(channelId)]: ownerId: \(ownerId) token = \(token), \(ret)")
+            errorLoaderPrint("join room[\(channelId)] ex fail: ownerId: \(ownerId) token = \(token), \(ret)")
         }
     }
     
@@ -234,21 +234,11 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
             mediaOptions.autoSubscribeVideo = true
             
             isMuteAllRemoteAudioStreamsEx = false
-            
         } else if realState == .joinedWithVideo {
             mediaOptions.autoSubscribeAudio = true
             mediaOptions.autoSubscribeVideo = true
             
             isMuteAllRemoteAudioStreamsEx = true
-            if let engine = config?.rtcEngine,
-               let connection = exConnectionMap[anchorInfo.channelName]  {
-                DispatchQueue.main.async {
-                    engine.muteAllRemoteAudioStreamsEx(true, connection: connection)
-                }
-                
-            } else {
-                warningLoaderPrint("[\(anchorInfo.channelName)] muteAllRemoteAudioStreamsEx(true) fail")
-            }
         } else {
             mediaOptions.autoSubscribeAudio = false
             mediaOptions.autoSubscribeVideo = false
@@ -261,7 +251,8 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
         if let isMuteAllRemoteAudioStreamsEx = isMuteAllRemoteAudioStreamsEx {
             if let engine = config?.rtcEngine,
                let connection = exConnectionMap[anchorInfo.channelName]  {
-                engine.muteAllRemoteAudioStreamsEx(isMuteAllRemoteAudioStreamsEx, connection: connection)
+                let ret = engine.muteAllRemoteAudioStreamsEx(isMuteAllRemoteAudioStreamsEx, connection: connection)
+                warningLoaderPrint("[\(anchorInfo.channelName)] muteAllRemoteAudioStreamsEx(\(isMuteAllRemoteAudioStreamsEx)): \(ret)")
             } else {
                 warningLoaderPrint("[\(anchorInfo.channelName)] muteAllRemoteAudioStreamsEx(\(isMuteAllRemoteAudioStreamsEx)) fail")
             }
@@ -381,6 +372,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
 
 extension VideoLoaderApiImpl {
     func startMediaRenderingTracing(anchorId: String) {
+        debugLoaderPrint("startMediaRenderingTracing: \(anchorId)")
         guard let engine = config?.rtcEngine, let connection = exConnectionMap[anchorId] else {return}
         engine.startMediaRenderingTracingEx(connection)
     }

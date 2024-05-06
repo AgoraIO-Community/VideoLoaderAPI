@@ -36,24 +36,30 @@ class ShowRobotService {
     func startCloudPlayers(count: Int) {
         assert(count > 0)
         for i in 0...count-1 {
-            let roomId = ShowRobotService.robotRoomId(i)
-            let idx = i % robotStreamURL.count
-            let streamUrl = robotStreamURL[idx]
-            print("startCloudPlayer[\(roomId)]: \(streamUrl)")
-            NetworkManager.shared.startCloudPlayer(channelName: "\(roomId)",
-                                                   uid: "\(kCurrentUid)",
-                                                   robotUid: UInt(kRobotUid),
-                                                   streamUrl: streamUrl) { msg in
-                if let msg = msg {
-                    print("startCloudPlayer fail[\(roomId)]: \(msg)")
-                    return
+            self.startCloudPlayer(idx: i, count: count)
+        }
+    }
+    
+    private func startCloudPlayer(idx: Int, count: Int) {
+        let roomId = ShowRobotService.robotRoomId(idx)
+        let idx = idx % robotStreamURL.count
+        let streamUrl = robotStreamURL[idx]
+        NetworkManager.shared.startCloudPlayer(channelName: "\(roomId)",
+                                               uid: "\(kCurrentUid)",
+                                               robotUid: UInt(kRobotUid),
+                                               streamUrl: streamUrl) { msg in
+            if let _ = msg {
+                //失败无条件全部重试
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                    self.startCloudPlayer(idx: idx, count: count)
                 }
-                if i == 0 {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
-                        self.playerHeartBeat(count: count)
-                    }
-                    self.timer?.fire()
+                return
+            }
+            if idx == 0 {
+                self.timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
+                    self.playerHeartBeat(count: count)
                 }
+                self.timer?.fire()
             }
         }
     }

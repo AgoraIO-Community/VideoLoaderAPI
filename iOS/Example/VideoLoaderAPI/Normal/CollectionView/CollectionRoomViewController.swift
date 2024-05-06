@@ -175,9 +175,9 @@ extension RoomCollectionViewController: IVideoLoaderApiListener {
             return
         }
         label.frame.size = CGSize(width: view.bounds.width, height: 0)
-        label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] rtc cost: \(elapsed)ms"
+        label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] 实际耗时: \(elapsed)ms"
         if let ts = delegateHandler.cellVisibleTime(channelName: room.channelName()) {
-            label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] rtc cost: \(elapsed)ms display: \(Int64(Date().timeIntervalSince1970 * 1000) - ts)ms"
+            label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] 实际耗时: \(elapsed)ms 感官耗时: \(Int64(Date().timeIntervalSince1970 * 1000) - ts)ms"
         }
         label.sizeToFit()
         label.frame = CGRect(origin: CGPoint(x: 10, y: 40), size: label.frame.size)

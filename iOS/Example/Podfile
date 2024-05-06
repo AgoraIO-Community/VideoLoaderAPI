@@ -6,7 +6,8 @@ platform :ios, '10.0'
 
 target 'VideoLoaderAPI_Example' do
   pod 'VideoLoaderAPI', :path => '../'
-
+  pod 'SwiftyBeaver', '1.9.5'
+  
   target 'VideoLoaderAPI_Tests' do
     inherit! :search_paths
 

@@ -26,6 +26,7 @@
 		DDD478392AD80BDB00117CF8 /* ShowRobotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD4782D2AD80BDB00117CF8 /* ShowRobotService.swift */; };
 		DDD4783A2AD80BDB00117CF8 /* TestCollectionLoadingDelegateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD4782E2AD80BDB00117CF8 /* TestCollectionLoadingDelegateHandler.swift */; };
 		DDD4783B2AD80BDB00117CF8 /* VideoLoaderDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD4782F2AD80BDB00117CF8 /* VideoLoaderDefine.swift */; };
+		DDFC71A72BD8FA0300690EF6 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFC71A62BD8FA0300690EF6 /* Logger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		DDD4782D2AD80BDB00117CF8 /* ShowRobotService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowRobotService.swift; sourceTree = "<group>"; };
 		DDD4782E2AD80BDB00117CF8 /* TestCollectionLoadingDelegateHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestCollectionLoadingDelegateHandler.swift; sourceTree = "<group>"; };
 		DDD4782F2AD80BDB00117CF8 /* VideoLoaderDefine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoLoaderDefine.swift; sourceTree = "<group>"; };
+		DDFC71A62BD8FA0300690EF6 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				DDD4782C2AD80BDB00117CF8 /* DebugSettingViewController.swift */,
+				DDFC71A62BD8FA0300690EF6 /* Logger.swift */,
 				DDD478252AD80BDB00117CF8 /* KeyCenter.swift */,
 				DDD478272AD80BDB00117CF8 /* NetworkManager.swift */,
 				DDD478282AD80BDB00117CF8 /* Normal */,
@@ -279,7 +282,7 @@
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = YS397FG5PA;
 						LastSwiftMigration = 0900;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -382,6 +385,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-VideoLoaderAPI_Example/Pods-VideoLoaderAPI_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SwiftyBeaver/SwiftyBeaver.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/AgoraRtcEngine_Special_iOS/AgoraAiEchoCancellationExtension.framework/AgoraAiEchoCancellationExtension",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/AgoraRtcEngine_Special_iOS/AgoraAiNoiseSuppressionExtension.framework/AgoraAiNoiseSuppressionExtension",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/AgoraRtcEngine_Special_iOS/AgoraAudioBeautyExtension.framework/AgoraAudioBeautyExtension",
@@ -404,6 +408,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBeaver.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AgoraAiEchoCancellationExtension.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AgoraAiNoiseSuppressionExtension.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AgoraAudioBeautyExtension.framework",
@@ -447,6 +452,7 @@
 				DDD478392AD80BDB00117CF8 /* ShowRobotService.swift in Sources */,
 				DDD478312AD80BDB00117CF8 /* ThumbRoomCollectionViewCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				DDFC71A72BD8FA0300690EF6 /* Logger.swift in Sources */,
 				DDD478342AD80BDB00117CF8 /* RoomCollectionListViewController.swift in Sources */,
 				DDD478372AD80BDB00117CF8 /* TestRoomCollectionViewCell.swift in Sources */,
 			);
@@ -595,10 +601,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YS397FG5PA;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YS397FG5PA;
 				INFOPLIST_FILE = VideoLoaderAPI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "秒切秒开";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -608,7 +612,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.videoloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = wildcard;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
@@ -620,10 +623,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YS397FG5PA;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YS397FG5PA;
 				INFOPLIST_FILE = VideoLoaderAPI/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "秒切秒开";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -632,7 +633,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.videoloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = wildcard;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
