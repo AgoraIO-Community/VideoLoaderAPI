@@ -22,13 +22,13 @@ import AgoraRtcKit
 }
 
 //房间信息
-@objc public class AnchorInfo: NSObject {
+@objcMembers public class AnchorInfo: NSObject {
     public var channelName: String = ""   //频道名
     public var uid: UInt = 0              //频道对应的uid
     public var token: String = ""         //频道对应的token
 }
 
-@objc public class VideoCanvasContainer: NSObject {
+@objcMembers public class VideoCanvasContainer: NSObject {
     public var container: UIView?                            //需要渲染到的view
     public var uid: UInt = 0                                 //需要渲染的用户uid
     public var setupMode: AgoraVideoViewSetupMode = .add     //画布模式
