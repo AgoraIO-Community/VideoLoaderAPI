@@ -150,6 +150,7 @@ class NetworkManager:NSObject {
                        type: AgoraTokenType,
                        success: @escaping (String?) -> Void)
     {
+        agora_info("generateToken start")
         let params = ["appCertificate": KeyCenter.Certificate ?? "",
                       "appId": KeyCenter.AppId,
                       "channelName": channelName,
@@ -167,26 +168,26 @@ class NetworkManager:NSObject {
                                           success: { response in
             let data = response["data"] as? [String: String]
             let token = data?["token"]
-            agora_info("generateToken: \(response)")
+            agora_info("generateToken success: \(response)")
             success(token)
 //            ToastView.hidden()
         }, failure: { error in
-            agora_error("generateToken: \(error.localizedCapitalized)")
+            agora_error("generateToken fail: \(error.localizedCapitalized)")
             success(nil)
 //            ToastView.hidden()
         })
     }
     
     func getRequest(urlString: String, success: SuccessClosure?, failure: FailClosure?) {
-        DispatchQueue.global().async {
+//        DispatchQueue.global().async {
             self.request(urlString: urlString, params: nil, method: .GET, success: success, failure: failure)
-        }
+//        }
     }
 
     func postRequest(urlString: String, params: [String: Any]?, success: SuccessClosure?, failure: FailClosure?) {
-        DispatchQueue.global().async {
+//        DispatchQueue.global().async {
             self.request(urlString: urlString, params: params, method: .POST, success: success, failure: failure)
-        }
+//        }
     }
 
     private func request(urlString: String,
