@@ -18,8 +18,8 @@ This section mainly describes how to quickly run the VideoLoaderAPI Demo
 
 1. Follow [The Account Document](https://docs.agora.io/en/video-calling/reference/manage-agora-account) to get the **App ID** and **App Certificate(if enable token)**.
 2. Follow [The Restfull Document](https://docs.agora.io/en/video-calling/reference/restful-authentication) to get the **Customer ID** and **Customer Secret**.
-3. Follow [The Media Pull Document](https://docs.agora.io/en/media-pull/get-started/enable-media-pull) to enable media pull for cloud player.
-4. Open the `Android` project and fill in properties got above to the root [gradle.properties](../gradle.properties) file.
+3. Please contact Agora technical support to grant rte-cloudplayer permission to your APPID. Only after granting permission can the default robot room streaming be activated.
+4. Open the `Android` project and fill in properties got above to the root [gradle.properties](gradle.properties) file.
 
 ```
 # RTM RTC SDK key Config
