@@ -22,16 +22,16 @@ import AgoraRtcKit
 }
 
 //房间信息
-@objc public class AnchorInfo: NSObject {
+@objcMembers public class AnchorInfo: NSObject {
     public var channelName: String = ""   //频道名
     public var uid: UInt = 0              //频道对应的uid
     public var token: String = ""         //频道对应的token
 }
 
-@objc public class VideoCanvasContainer: NSObject {
-    public var container: UIView?                          //需要渲染到的view
-    public var uid: UInt = 0                               //需要渲染的用户uid
-    public var setupMode: AgoraVideoViewSetupMode = .add   //画布模式
+@objcMembers public class VideoCanvasContainer: NSObject {
+    public var container: UIView?                            //需要渲染到的view
+    public var uid: UInt = 0                                 //需要渲染的用户uid
+    public var setupMode: AgoraVideoViewSetupMode = .add     //画布模式
 //    public var viewIndex: Int = 0
 //    public var renderMode: Int = Constants.RENDER_MODE_HIDDEN
 }
@@ -98,17 +98,4 @@ import AgoraRtcKit
     /// 移除api代理
     /// - Parameter listener: <#listener description#>
     func removeListener(listener: IVideoLoaderApiListener)
-    
-    /// 添加RTC代理
-    /// - Parameter listener: <#listener description#>
-    func addRTCListener(anchorId: String, listener: AgoraRtcEngineDelegate)
-    
-    /// 移除RTC代理
-    /// - Parameter listener: <#listener description#>
-    func removeRTCListener(anchorId: String, listener: AgoraRtcEngineDelegate)
-    
-    /// 获取rtc delegate
-    /// - Parameter anchorId: 对应频道的id
-    /// - Returns: <#description#>
-    func getRTCListener(anchorId: String) -> AgoraRtcEngineDelegate?
 }

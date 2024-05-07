@@ -159,6 +159,15 @@ extension RoomCollectionViewController: UICollectionViewDataSource {
     }
 }
 
+
+func createDateFormatter()-> DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+    return formatter
+}
+
+let formatter = createDateFormatter()
+
 extension RoomCollectionViewController: IVideoLoaderApiListener {
     func onFirstFrameRecv(channelName: String, uid: UInt, elapsed: Int64) {
         guard let room = roomList.first(where: { $0.channelName() == channelName}),
@@ -166,13 +175,10 @@ extension RoomCollectionViewController: IVideoLoaderApiListener {
             return
         }
         label.frame.size = CGSize(width: view.bounds.width, height: 0)
-        label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] rtc cost: \(elapsed)ms"
-        #if DEBUG
-        if let date = delegateHandler.cellVisibleDate[room.channelName()] {
-            
-            label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] rtc cost: \(elapsed)ms display: \(Int64(-date.timeIntervalSinceNow * 1000))ms"
+        label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] 实际耗时: \(elapsed)ms"
+        if let ts = delegateHandler.cellVisibleTime(channelName: room.channelName()) {
+            label.text = "\(formatter.string(from: Date()))\nroom[\(channelName)] 实际耗时: \(elapsed)ms 感官耗时: \(Int64(Date().timeIntervalSince1970 * 1000) - ts)ms"
         }
-        #endif
         label.sizeToFit()
         label.frame = CGRect(origin: CGPoint(x: 10, y: 40), size: label.frame.size)
     }

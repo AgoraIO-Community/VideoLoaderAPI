@@ -14,7 +14,7 @@ public class VideoLoaderApiImpl: NSObject {
     public var printClosure: ((String)->())?
     public var warningClosure: ((String)->())?
     public var errorClosure: ((String)->())?
-    private var config: VideoLoaderConfig?
+    var config: VideoLoaderConfig?
     
     private let apiProxy = VideoLoaderApiProxy()
     private var profilerMap: [String: VideoLoaderProfiler] = [:]
@@ -24,9 +24,11 @@ public class VideoLoaderApiImpl: NSObject {
     //[ex channelId: [tagId: status]]
     private var exConnectionDeps: [String: [String: AnchorState]] = [:]
     private var renderViewMap: [String: AnchorInfo] = [:]
+    
+    var reporter: APIReporter?
         
     deinit {
-        apiPrint("deinit-- VideoLoaderApiImpl")
+        debugApiPrint("deinit-- VideoLoaderApiImpl")
         cleanCache()
         rtcProxys.forEach { key, value in
             value.removeAllListener()
@@ -34,14 +36,14 @@ public class VideoLoaderApiImpl: NSObject {
     }
     
     private override init() {
-        apiPrint("init-- VideoLoaderApiImpl")
+        debugApiPrint("init-- VideoLoaderApiImpl")
         super.init()
     }
 }
 
 //MARK: private
 extension VideoLoaderApiImpl {
-    private func _getProfiler(anchorId: String) -> VideoLoaderProfiler {
+    func _getProfiler(anchorId: String) -> VideoLoaderProfiler {
         let profiler = profilerMap[anchorId] ?? VideoLoaderProfiler(anchorId: anchorId)
         profiler.firstFrameCompletion = {[weak self] cost, uid in
             guard let self = self else {return}
@@ -131,9 +133,9 @@ extension VideoLoaderApiImpl {
         exConnectionMap[channelId] = connection
             
         if ret == 0 {
-            debugLoaderPrint("join room ex[\(channelId)]: ownerId: \(ownerId) connection count: \(exConnectionMap.count)")
+            debugLoaderPrint("join room[\(channelId)] ex: ownerId: \(ownerId) connection count: \(exConnectionMap.count)")
         }else{
-            errorLoaderPrint("join room ex fail[\(channelId)]: ownerId: \(ownerId) token = \(token), \(ret)")
+            errorLoaderPrint("join room[\(channelId)] ex fail: ownerId: \(ownerId) token = \(token), \(ret)")
         }
     }
     
@@ -147,6 +149,7 @@ extension VideoLoaderApiImpl {
         }
         
         let profiler = _getProfiler(anchorId: channelId)
+        profilerMap.removeValue(forKey: channelId)
         removeRTCListener(anchorId: channelId, listener: profiler)
 //        rtcEngine.setAudioSessionOperationRestriction(.all)
         rtcEngine.leaveChannelEx(connection)
@@ -158,12 +161,15 @@ extension VideoLoaderApiImpl {
 //MARK: VideoLoaderApiProtocol
 extension VideoLoaderApiImpl: IVideoLoaderApi {
     public func setup(config: VideoLoaderConfig) {
+        self.config = config
+        reporter = APIReporter(type: .videoLoader, version: kApiVersion, engine: config.rtcEngine!)
+        _reportMethod(event: "\(#function)")
         cleanCache()
 //        config.rtcEngine?.setParameters("{\"rtc.log_filter\":65535}")
-        self.config = config
     }
     
     public func preloadAnchor(preloadAnchorList: [AnchorInfo], uid: UInt) {
+        _reportMethod(event: "\(#function)", value: ["uid": uid, "preloadAnchorList": preloadAnchorList.map({ $0.channelName })])
         guard let rtcEngine = self.config?.rtcEngine else {return}
         debugLoaderPrint("preloadAnchor: \(preloadAnchorList.map({$0.channelName}))")
         preloadAnchorList.forEach { anchorInfo in
@@ -179,6 +185,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
                                   localUid: UInt,
                                   anchorInfo: AnchorInfo,
                                   tagId: String?) {
+        _reportMethod(event: "\(#function)", value: ["newState": newState.rawValue, "localUid": localUid, "tagId": tagId ?? "", "anchorChannelName": anchorInfo.channelName, "anchorUid": anchorInfo.uid])
         if localUid == 0 {
             warningLoaderPrint("\(anchorInfo.channelName) localUid invalidate")
             return
@@ -204,11 +211,11 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
             errorLoaderPrint("switchAnchorState fatal, map init fail")
             return
         }
-        let oldState = getAnchorState(anchorInfo: anchorInfo)
+        let oldState = _getAnchorState(anchorInfo: anchorInfo)
         
         exConnectionDeps[anchorInfo.channelName] = map
         
-        let realState = getAnchorState(anchorInfo: anchorInfo)
+        let realState = _getAnchorState(anchorInfo: anchorInfo)
         
         if realState == .idle {
             _leaveChannelEx(channelId: anchorInfo.channelName)
@@ -227,21 +234,11 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
             mediaOptions.autoSubscribeVideo = true
             
             isMuteAllRemoteAudioStreamsEx = false
-            
         } else if realState == .joinedWithVideo {
             mediaOptions.autoSubscribeAudio = true
             mediaOptions.autoSubscribeVideo = true
             
             isMuteAllRemoteAudioStreamsEx = true
-            if let engine = config?.rtcEngine,
-               let connection = exConnectionMap[anchorInfo.channelName]  {
-                DispatchQueue.main.async {
-                    engine.muteAllRemoteAudioStreamsEx(true, connection: connection)
-                }
-                
-            } else {
-                warningLoaderPrint("[\(anchorInfo.channelName)] muteAllRemoteAudioStreamsEx(true) fail")
-            }
         } else {
             mediaOptions.autoSubscribeAudio = false
             mediaOptions.autoSubscribeVideo = false
@@ -254,7 +251,8 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
         if let isMuteAllRemoteAudioStreamsEx = isMuteAllRemoteAudioStreamsEx {
             if let engine = config?.rtcEngine,
                let connection = exConnectionMap[anchorInfo.channelName]  {
-                engine.muteAllRemoteAudioStreamsEx(isMuteAllRemoteAudioStreamsEx, connection: connection)
+                let ret = engine.muteAllRemoteAudioStreamsEx(isMuteAllRemoteAudioStreamsEx, connection: connection)
+                warningLoaderPrint("[\(anchorInfo.channelName)] muteAllRemoteAudioStreamsEx(\(isMuteAllRemoteAudioStreamsEx)): \(ret)")
             } else {
                 warningLoaderPrint("[\(anchorInfo.channelName)] muteAllRemoteAudioStreamsEx(\(isMuteAllRemoteAudioStreamsEx)) fail")
             }
@@ -262,7 +260,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
         
         if (realState == .joinedWithAudioVideo || realState == .joinedWithVideo), (oldState == .idle || oldState == .prejoined) {
             let profiler = _getProfiler(anchorId: anchorInfo.channelName)
-            profiler.startTime = Int64(NSDate().timeIntervalSince1970 * 1000)
+            profiler.actualStartTime = Int64(NSDate().timeIntervalSince1970 * 1000)
         }
         if realState != oldState {
             let api = apiProxy as IVideoLoaderApiListener
@@ -271,19 +269,8 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
     }
     
     public func getAnchorState(anchorInfo: AnchorInfo) -> AnchorState {
-        var realState: AnchorState = .idle
-        
-        guard let map: [String: AnchorState] = exConnectionDeps[anchorInfo.channelName] else {
-            return realState
-        }
-        //calc real type
-        map.forEach { (key: String, value: AnchorState) in
-            if realState.rawValue < value.rawValue {
-                realState = value
-            }
-        }
-        
-        return realState
+        _reportMethod(event: "\(#function)", value: ["anchorChannelName": anchorInfo.channelName, "anchorUid": anchorInfo.uid])
+        return _getAnchorState(anchorInfo: anchorInfo)
     }
     
     public func getConnectionMap() -> [String: AgoraRtcConnection] {
@@ -291,6 +278,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
     }
     
     public func renderVideo(anchorInfo: AnchorInfo, container: VideoCanvasContainer) {
+        _reportMethod(event: "\(#function)", value: ["anchorChannelName" :anchorInfo.channelName, "anchorUid": anchorInfo.uid])
         guard let engine = config?.rtcEngine,
               let connection = exConnectionMap[anchorInfo.channelName] else {
             errorLoaderPrint("renderVideo fail: connection is empty")
@@ -325,6 +313,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
     }
     
     public func cleanCache() {
+        _reportMethod(event: "\(#function)")
         guard let rtcEngine = self.config?.rtcEngine else {return}
 //        rtcEngine.setAudioSessionOperationRestriction(.all)
         exConnectionMap.forEach { anchorId, connection in
@@ -339,11 +328,29 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
     }
     
     public func addListener(listener: IVideoLoaderApiListener) {
+        _reportMethod(event: "\(#function)")
         apiProxy.addListener(listener)
     }
     
     public func removeListener(listener: IVideoLoaderApiListener) {
+        _reportMethod(event: "\(#function)")
         apiProxy.removeListener(listener)
+    }
+    
+    func _getAnchorState(anchorInfo: AnchorInfo) -> AnchorState {
+        var realState: AnchorState = .idle
+        
+        guard let map: [String: AnchorState] = exConnectionDeps[anchorInfo.channelName] else {
+            return realState
+        }
+        //calc real type
+        map.forEach { (key: String, value: AnchorState) in
+            if realState.rawValue < value.rawValue {
+                realState = value
+            }
+        }
+        
+        return realState
     }
     
     public func addRTCListener(anchorId: String, listener: AgoraRtcEngineDelegate) {
@@ -365,6 +372,7 @@ extension VideoLoaderApiImpl: IVideoLoaderApi {
 
 extension VideoLoaderApiImpl {
     func startMediaRenderingTracing(anchorId: String) {
+        debugLoaderPrint("startMediaRenderingTracing: \(anchorId)")
         guard let engine = config?.rtcEngine, let connection = exConnectionMap[anchorId] else {return}
         engine.startMediaRenderingTracingEx(connection)
     }
@@ -377,5 +385,17 @@ extension VideoLoaderApiImpl {
             anchorIds.append(key)
         }
         return anchorIds
+    }
+}
+
+let kApiVersion = "1.0.0"
+extension VideoLoaderApiImpl {
+    private func _reportMethod(event: String, value: [String: Any]? = nil) {
+        debugLoaderPrint("_reportMethod event: \(event) value: \(value ?? [:])")
+        var subEvent = event
+        if let range = event.range(of: "(") {
+            subEvent = String(event[..<range.lowerBound])
+        }
+        reporter?.reportFuncEvent(name: subEvent, value: value ?? [:], ext: [:])
     }
 }

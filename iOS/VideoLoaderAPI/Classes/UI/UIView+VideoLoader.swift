@@ -109,9 +109,8 @@ extension UIView {
                                                             localUid: localUid,
                                                             anchorInfo: anchorInfo,
                                                             tagId: roomInfo.channelName())
-                
+                let container = VideoCanvasContainer()
                 if let renderView = self.ag_eventHandler?.onRequireRenderVideo?(anchorInfo) {
-                    let container = VideoCanvasContainer()
                     container.uid = anchorInfo.uid
                     container.container = renderView
                     VideoLoaderApiImpl.shared.renderVideo(anchorInfo: anchorInfo, container: container)

@@ -43,7 +43,7 @@ class NetworkManager:NSObject {
     }()
 
     @objc static let shared = NetworkManager()
-    private let baseServerUrl: String = "https://service.agora.io/toolbox/"
+    private let baseServerUrl: String = "https://service.shengwang.cn/toolbox/"
     
     private func basicAuth(key: String, password: String) -> String {
         let loginString = String(format: "%@:%@", key, password)
@@ -92,6 +92,7 @@ class NetworkManager:NSObject {
                           robotUid: UInt,
                           streamUrl: String,
                           success: @escaping (String?) -> Void) {
+        let traceId = UUID().uuidString
         let params: [String: Any] = ["appId": KeyCenter.AppId,
                                      "appCert": KeyCenter.Certificate ?? "",
                                      "basicAuth":basicAuth(key: KeyCenter.CloudPlayerKey ?? "", password: KeyCenter.CloudPlayerSecret ?? ""),
@@ -101,16 +102,18 @@ class NetworkManager:NSObject {
                                      "region": "cn",
                                      "streamUrl": streamUrl,
                                      "src": "iOS",
-                                     "traceId": UUID().uuidString]
-                      
+                                     "traceId": traceId]
+        
+        agora_info("startCloudPlayer[\(channelName)][\(traceId)] start")
         NetworkManager.shared.postRequest(urlString: "\(baseServerUrl)v1/rte-cloud-player/start",
                                           params: params,
                                           success: { response in
             let code = response["code"] as? Int
             let msg = response["msg"] as? String
+            agora_info("startCloudPlayer[\(channelName)][\(traceId)] code: \(code ?? 0) msg:\(msg ?? "")")
             success(code == 0 ? nil : msg)
         }, failure: { error in
-            print(error)
+            agora_error("startCloudPlayer[\(channelName)][\(traceId)] fail: \(error)")
             success(error.description)
         })
     }
@@ -118,20 +121,24 @@ class NetworkManager:NSObject {
     func cloudPlayerHeartbeat(channelName: String,
                               uid: String,
                               success: @escaping (String?) -> Void) {
+        let traceId = UUID().uuidString
         let params: [String: String] = ["appId": KeyCenter.AppId,
                                         "channelName": channelName,
                                         "uid": uid,
                                         "src": "iOS",
-                                        "traceId": UUID().uuidString]
-                      
+                                        "traceId": traceId]
+        
+        agora_info("cloudPlayerHeartbeat[\(channelName)][\(traceId)] start")
         NetworkManager.shared.postRequest(urlString: "\(baseServerUrl)v1/heartbeat",
                                           params: params,
                                           success: { response in
             let code = response["code"] as? Int
             let msg = response["msg"] as? String
+            
+            agora_info("cloudPlayerHeartbeat[\(channelName)][\(traceId)] code: \(code ?? 0) msg: \(msg ?? "")")
             success(code == 0 ? nil : msg)
         }, failure: { error in
-            print(error)
+            agora_error("cloudPlayerHeartbeat[\(channelName)][\(traceId)] fail: \(error)")
             success(error.description)
         })
     }
@@ -143,6 +150,7 @@ class NetworkManager:NSObject {
                        type: AgoraTokenType,
                        success: @escaping (String?) -> Void)
     {
+        agora_info("generateToken start")
         let params = ["appCertificate": KeyCenter.Certificate ?? "",
                       "appId": KeyCenter.AppId,
                       "channelName": channelName,
@@ -160,26 +168,26 @@ class NetworkManager:NSObject {
                                           success: { response in
             let data = response["data"] as? [String: String]
             let token = data?["token"]
-            print(response)
+            agora_info("generateToken success: \(response)")
             success(token)
 //            ToastView.hidden()
         }, failure: { error in
-            print(error)
+            agora_error("generateToken fail: \(error.localizedCapitalized)")
             success(nil)
 //            ToastView.hidden()
         })
     }
     
     func getRequest(urlString: String, success: SuccessClosure?, failure: FailClosure?) {
-        DispatchQueue.global().async {
+//        DispatchQueue.global().async {
             self.request(urlString: urlString, params: nil, method: .GET, success: success, failure: failure)
-        }
+//        }
     }
 
     func postRequest(urlString: String, params: [String: Any]?, success: SuccessClosure?, failure: FailClosure?) {
-        DispatchQueue.global().async {
+//        DispatchQueue.global().async {
             self.request(urlString: urlString, params: params, method: .POST, success: success, failure: failure)
-        }
+//        }
     }
 
     private func request(urlString: String,
@@ -218,9 +226,7 @@ class NetworkManager:NSObject {
                                                            options: .sortedKeys) // convertParams(params: params).data(using: .utf8)
         }
         let curl = request.cURL(pretty: true)
-        #if DEBUG
-        debugPrint("curl == \(curl)")
-        #endif
+        agora_info("curl == \(curl)")
         return request
     }
 

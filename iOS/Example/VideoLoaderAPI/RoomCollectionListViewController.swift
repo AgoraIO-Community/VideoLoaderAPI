@@ -87,6 +87,11 @@ class RoomCollectionListViewController: UIViewController {
         _loadToken()
         ShowRobotService.shared.startCloudPlayers(count: 10)
         
+        VideoLoaderApiImpl.shared.printClosure = { msg in
+            
+            agora_info("[VideoLoaderApi] \(msg)")
+        }
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "设置", style: .done, target: self, action: #selector(onSettingAction))
     }
     
@@ -96,6 +101,7 @@ class RoomCollectionListViewController: UIViewController {
     }
     
     private func _loadToken() {
+        agora_info("load token start")
         NetworkManager.shared.generateToken(channelName: "",
                                             uid: "\(kCurrentUid)",
                                             tokenType: .token007,
@@ -107,6 +113,7 @@ class RoomCollectionListViewController: UIViewController {
             }
             self.token = token
             self.roomList = self.getMoreRoomList()
+            agora_info("load token end")
         }
     }
     

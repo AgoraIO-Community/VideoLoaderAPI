@@ -124,17 +124,20 @@ class LiveViewPagerActivity : BaseViewBindingActivity<ShowLiveDetailActivityBind
             }
 
             override fun onPageStartLoading(position: Int) {
-                Log.d(tag, "onPageLoad, position:$position")
+                // 页面刚刚开始显示
+                Log.d(tag, "onPageStartLoading, position:$position roomId:${mRoomInfoList[position % mRoomInfoList.size]?.roomId}")
                 vpFragments[position]?.startLoadPageSafely()
             }
 
             override fun onPageLoaded(position: Int) {
-                Log.d(tag, "onPageReLoad, position:$position")
+                // 页面显示完成（停止滑动）
+                Log.d(tag, "onPageLoaded, position:$position roomId:${mRoomInfoList[position % mRoomInfoList.size]?.roomId}")
                 vpFragments[position]?.onPageLoaded()
             }
 
             override fun onPageLeft(position: Int) {
-                Log.d(tag, "onPageHide, position:$position")
+                // 页面离开屏幕范围
+                Log.d(tag, "onPageLeft, position:$position roomId:${mRoomInfoList[position % mRoomInfoList.size]?.roomId}")
                 vpFragments[position]?.stopLoadPage(true)
             }
 
@@ -142,7 +145,8 @@ class LiveViewPagerActivity : BaseViewBindingActivity<ShowLiveDetailActivityBind
                 position: Int,
                 info: VideoLoader.AnchorInfo
             ): VideoLoader.VideoCanvasContainer? {
-                Log.d(tag, "onRequireRenderVideo, position:$position")
+                // 此回调为渲染视频画面最佳时机
+                Log.d(tag, "onRequireRenderVideo, position:$position roomId:${mRoomInfoList[position % mRoomInfoList.size]?.roomId}")
                 return vpFragments[position]?.initAnchorVideoView(info)
             }
         }
