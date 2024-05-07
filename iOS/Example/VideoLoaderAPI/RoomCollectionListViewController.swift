@@ -101,6 +101,7 @@ class RoomCollectionListViewController: UIViewController {
     }
     
     private func _loadToken() {
+        agora_info("load token start")
         NetworkManager.shared.generateToken(channelName: "",
                                             uid: "\(kCurrentUid)",
                                             tokenType: .token007,
@@ -112,6 +113,7 @@ class RoomCollectionListViewController: UIViewController {
             }
             self.token = token
             self.roomList = self.getMoreRoomList()
+            agora_info("load token end")
         }
     }
     
