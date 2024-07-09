@@ -32,7 +32,7 @@ VideoLoaderAPI 即秒开秒切场景化 API, 该模块旨在帮助视频直播�
 
     ![图片](https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/github_readme/ent-full/sdhy_3.jpg)
 
-  - 秒切机器人服务配置（CloudPlayer）
+  - 秒切机器人服务配置（RTE-CloudPlayer）
       ```json
       注: 请联系声网技术支持为您的 APPID 开通 rte-cloudplayer 权限, 开通权限后才能启动默认的机器人房间推流
       ```
